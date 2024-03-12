@@ -142,7 +142,7 @@ const MarketRecord = () => {
           > <MdAddShoppingCart /> <span className="ml-1"> Add New </span></button>
         </div>
       </div>
-      {isClicked.marketModal && (<MarketRecordModal districtId={isClicked.districtId} />)}
+      {isClicked.marketModal && (<div className="overflow-y-auto max-h-400" ><MarketRecordModal districtId={isClicked.districtId} /> </div>)}
       <GridComponent
         id="gridcomp"
         dataSource={marketrecord}

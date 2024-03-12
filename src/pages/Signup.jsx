@@ -37,7 +37,7 @@ console.log(districts)
       email: data.get('email'),
       position: data.get('position'),
       phone_number: data.get('phone_number'),
-      locations: data.get('district'),
+      location: data.get('district'),
       password: data.get('password'),
     }
     console.log(newUser)

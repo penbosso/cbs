@@ -23,14 +23,14 @@ console.log(users)
   const usersGrid = [
     {
       headerText: 'First name',
-      width: '150',
+      width: '100',
       field: 'firstname',
       textAlign: 'Center'
     },
     {
       field: 'lastname',
       headerText: 'Last name',
-      width: '120',
+      width: '100',
       textAlign: 'Center',
     },
     {
@@ -47,30 +47,30 @@ console.log(users)
     },
     {
       headerText: 'District',
-      width: '120',
+      width: '90',
       textAlign: 'Center',
       field: 'location'
     },
     {
       headerText: 'Role',
-      width: '120',
+      width: '90',
       textAlign: 'Center',
       field: 'role'
     },
     {
       headerText: 'Approved',
-      width: '120',
+      width: '80',
       textAlign: 'Center',
       field: 'is_approved'
     },
 
-    {
-      headerText: 'Date onboard',
-      field:  'updated_at',
-      width: '135',
-      format: 'yMd',
-      textAlign: 'Center'
-    },
+    // {
+    //   headerText: 'Date onboard',
+    //   field:  'updated_at',
+    //   width: '135',
+    //   format: 'yMd',
+    //   textAlign: 'Center'
+    // },
 
     {
       field: '',

@@ -23,40 +23,35 @@ const MarketRecordModal = ({ marketRecordId }) => {
     const [updateMarketRecord, { isLoading: editLoading }] = useUpdateMarketRecordMutation();
     const [form] = Form.useForm();
     const { data: marketRecord } = useGetMarketRecordByMarketRecordIdQuery(marketRecordId ? marketRecordId : skipToken);
-    const { data: markets } = useGetMarketsQuery();
+    const { data } = useGetMarketsQuery();
+    const markets = data?.markets;
     const [image_url, setImage_url] = useState('')
-    const editing = { allowDeleting: true, allowEditing: true };
-    const { Option } = Select;
-    console.log("my restaurant", myRestaurant)
-    console.log(marketRecord, marketRecordId)
 
-    const handleOk = async (values) => {
-        console.log(values)
+
+    const [records, setRecords] = useState([])
+
+    const handleSubmit = (values) => {
+        setRecords([...records, values])
+        form.resetFields();
+    }
+
+    const handleOk = async () => {
 
         if (marketRecordId) {
-            try {
-                const result = await updateMarketRecord({ id: marketRecord.id, values: { ...values, image: image_url } });
-                console.log(result);
-                if (result.error) {
-                    result.error?.code ? message.error(result.error.code) : message.error(result.error.message)
-                } else {
-                    message.success("Market Recordupdated")
-                }
-            } catch (e) {
-                message.error(e);
-            }
 
         } else {
+            const newMarketRecord = {market:selectMarket, records: records}            
+            console.log(newMarketRecord);
             try {
-                const item = { ...values, image: image_url, restaurant_id: myRestaurant?.restaurant_id }
-                const result = await addMarketRecord(item);
+                const result = await addMarketRecord(newMarketRecord);
                 console.log(result);
                 if (result.error) {
                     result.error?.code ? message.error(result.error.code) : message.error(result.error.message)
                 } else {
-                    message.success("Market Recordadded")
+                    message.success(result.message)
                     form.resetFields();
                 }
+                
             } catch (e) {
                 message.error(e);
             }
@@ -68,27 +63,17 @@ const MarketRecordModal = ({ marketRecordId }) => {
     }
 
 
-    const handleCancelPreview = () => setPreviewOpen(false);
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    const [previewTitle, setPreviewTitle] = useState('');
+    const [selectMarket, setSelectMarket] = useState(null);
 
-    const getBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
 
 
     return (
 
-        <div className=" flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            <div className="relative w-auto my-6 mx-auto max-w-3xl">
+        <div className=" flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none max-h-500 ">
+            <div className="relative w-auto my-6 mx-auto overflow-y-auto max-h-500 max-w-3xl">
                 {(!marketRecordId || marketRecord) ? <div className="border-2 border-color rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                        <h3 className="text-3xl font=semibold">{marketRecordId ? `Editing "${marketRecord?.item_name}"` : 'Add new market record'}</h3>
+                        <h3 className="text-3xl font=semibold">{marketRecordId ? `Editing "${marketRecord?.item_name}"` : `Add new ${selectMarket} market record`}</h3>
                         <button
                             style={{ backgroundColor: 'light - gray', color: 'rgb(153, 171, 180)', borderRadius: "50%" }}
                             className="text-2xl p-3 hover:drop-shadow-xl hover:bg-light-gray"
@@ -98,103 +83,126 @@ const MarketRecordModal = ({ marketRecordId }) => {
                         </button>
                     </div>
 
-                    <div className="shadow overflow-hidden sm:rounded-md">
-                        <div className="px-4 py-5 bg-white sm:p-6">
+                    {!selectMarket && (
+                        <div className='p-16'>
 
-
-                            <Form
-                                {...layout}
-                                layout="horizontal" form={form}
-                                onFinish={handleOk}
-                                initialValues={{
-                                    item_name: marketRecord?.item_name,
-                                    cost: marketRecord?.cost,
-                                    popular: marketRecord?.popular ? marketRecord?.popular : 'no',
-                                    status: marketRecord?.status,
-                                    market: marketRecord?.categeory,
-                                    description: marketRecord?.description,
-                                }}
+                            <select id="market" name="market" onChange={(e) => setSelectMarket(e.currentTarget.value)}
+                                className="block w-full mt-1 py-3 border-blue-400 rounded-md shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             >
-                                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                                    <Col>
-                                        <Form.Item
-                                            name="component"
-                                            label="Component"
-                                            rules={[{ required: true, message: 'Please enter an component' }]}
-                                        >
-                                            <Input />
-                                        </Form.Item>
-
-                                        <Form.Item
-                                            label="No. places available"
-                                            name="cost"
-                                            rules={[{ required: true, message: 'Please enter the cost!' }]}
-                                        >
-                                            <Input
-                                                formatter={(value) =>
-                                                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                                                }
-                                                parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                                step={0.01}
-                                                precision={2}
-                                            />
-                                        </Form.Item>
-
-                                        {/* <Form.Item
-                                            name="status"
-                                            label="Status"
-                                            rules={[{ required: true, message: 'Please select a status' }]}
-                                        >
-                                            <Select>
-                                                <Option value="active">Active</Option>
-                                                <Option value="inactive">Inactive</Option>
-                                            </Select>
-                                        </Form.Item> */}
-
-                                    </Col>
-                                    <Col >
-
-                                        <Form.Item
-                                            name="market"
-                                            label="Market"
-                                            rules={[{ required: true, message: 'Please select a market' }]}
-                                        >
-                                            <Select>
-                                                {markets?.map(cat => <Option key={cat.id} value={cat.market_name}>{cat.market_name}</Option>)}
-                                            </Select>
-                                        </Form.Item>
-
-                                        <Form.Item
-                                            label="No. places rented"
-                                            name="cost"
-                                            rules={[{ required: true, message: 'Please enter the cost!' }]}
-                                        >
-                                            <Input
-                                                formatter={(value) =>
-                                                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                                                }
-                                                parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                                step={0.01}
-                                                precision={2}
-                                            />
-                                        </Form.Item>
-
-                                        <Form.Item label="Observation" name="observation">
-                                            <TextArea placeholder="Brief description" rows={3} />
-                                        </Form.Item>
-                                    </Col>
-                                </Row>
-                                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                                    <Button style={{ color: 'blue' }} type="primary" htmlType="submit" loading={addLoading || editLoading}>
-                                        Save
-                                    </Button>
-                                    <Button htmlType="button" onClick={handleCancel}>
-                                        Cancel
-                                    </Button>
-                                </Form.Item>
-                            </Form>
+                                <option value="" >Select market</option>
+                                {markets?.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+                            </select>
                         </div>
-                    </div>
+                    )
+                    }
+
+                    {selectMarket &&
+                        (<div className="shadow overflow-y-auto max-h-400 sm:rounded-md">
+                            <div className="px-4 py-5 bg-white sm:p-6">
+
+
+                                <Form
+                                    {...layout}
+                                    layout="horizontal" form={form}
+                                    onFinish={handleSubmit}
+                                    initialValues={{
+                                        component: marketRecord?.component,
+                                        number_of_places_available: marketRecord?.number_of_places_available,
+                                        number_of_places_rented: marketRecord?.number_of_places_rented,
+                                        number_of_places_rented: marketRecord?.number_of_places_rented,
+                                    }}
+                                >
+                                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                                        <Col>
+                                            <Form.Item
+                                                name="component"
+                                                label="Component"
+                                                rules={[{ required: true, message: 'Please enter an component' }]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                label="No. available"
+                                                name="number_of_places_available"
+                                                rules={[{ required: true, message: 'Please enter the cost!' }]}
+                                            >
+                                                <Input
+                                                    formatter={(value) =>
+                                                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                                                    }
+                                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                                    step={1}
+                                                    precision={0}
+                                                />
+                                            </Form.Item>
+
+                                        </Col>
+                                        <Col >
+
+                                            <Form.Item
+                                                label="No. rented"
+                                                name="number_of_places_rented"
+                                                rules={[{ required: true, message: 'Please enter the cost!' }]}
+                                            >
+                                                <Input
+                                                    formatter={(value) =>
+                                                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                                                    }
+                                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                                    step={1}
+                                                    precision={0}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Observation" name="observation">
+                                                <TextArea placeholder="Brief description" rows={3} />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                                        <Button style={{ color: 'blue' }} type="primary" htmlType="submit">
+                                            Add
+                                        </Button>
+                                        <Button htmlType="button" onClick={handleCancel}>
+                                            Cancel
+                                        </Button>
+                                    </Form.Item>
+                                </Form>
+
+                                {records.length > 0 &&
+                                    (
+                                        <div class="overflow-y-auto max-h-100 ">
+                                            <table class="table-auto border-collapse border border-gray-300">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="border border-gray-300 px-4 py-2">Component</th>
+                                                        <th class="border border-gray-300 px-4 py-2">No. places available</th>
+                                                        <th class="border border-gray-300 px-4 py-2">No. places rented</th>
+                                                        <th class="border border-gray-300 px-4 py-2">Obseravation</th>
+                                                    </tr>
+                                                </thead>
+                                                {records.map(record => {
+                                                    return (<tr> <td class="border border-gray-300 px-4 py-2">{record.component}</td>
+                                                        <td class="border border-gray-300 px-4 py-2">{record.number_of_places_available}</td>
+                                                        <td class="border border-gray-300 px-4 py-2">{record.number_of_places_rented}</td>
+                                                        <td class="border border-gray-300 px-4 py-2">{record.observation}</td></tr>)
+                                                })}
+                                            </table>
+
+                                            <div className='flex justify-center p-4'>
+                                                <button onClick={() => handleOk()} type="button" style={{ backgroundColor: '#078ece' }}
+                                                    className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl px-4 py-2">
+                                                    Save
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    )
+
+                                }
+                            </div>
+                        </div>)}
                 </div> : <Loading />}
             </div>
         </div>
