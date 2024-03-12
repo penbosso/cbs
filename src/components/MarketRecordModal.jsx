@@ -31,7 +31,7 @@ const MarketRecordModal = ({ marketRecordId }) => {
     const [records, setRecords] = useState([])
 
     const handleSubmit = (values) => {
-        setRecords([...records, values])
+        setRecords([...records, {...values, component_escription:'not needed'}])
         form.resetFields();
     }
 
