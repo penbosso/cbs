@@ -32,21 +32,48 @@ const MarketRecordDetail = () => {
                 </div>
                 <h2 className="text-xl font-bold mb-2">Records:</h2>
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    {marketRecord.records.map((record, index) => (
-                        <div key={index} className="bg-gray-100 p-4 rounded">
-                            <h3 className="text-lg font-semibold mb-2">{record.component_name}</h3>
-                            <p className="mb-2">{record.component_description}</p>
-                            <p>Total Number of Places Available: {record.total_number_places_available}</p>
-                            <p>Number of Places Rented: {record.number_places_rented}</p>
-                            <p>Occupancy Rate: {record.occupancy_rate}%</p>
-                            <p>Observation: {record.observation}</p>
+                    {marketRecord?.records?.map((record, index) => (
+                        <div key={index} className="bg-gray-100 p-6 rounded-lg shadow-md">
+                            <h3 className="text-xl font-semibold mb-2">{record.component_name}</h3>
+                            <p className="text-gray-600 mb-2">{record.component_description}</p>
+                            <div className="flex flex-wrap mb-2">
+                                <div className="w-1/2">
+                                    <p className="text-sm text-gray-500">Total Places Available:</p>
+                                    <p className="text-lg font-semibold">{record.total_number_places_available}</p>
+                                </div>
+                                <div className="w-1/2">
+                                    <p className="text-sm text-gray-500">Places Rented:</p>
+                                    <p className="text-lg font-semibold">{record.number_places_rented}</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap mb-2">
+                                <div className="w-1/2">
+                                    <p className="text-sm text-gray-500">Occupancy Rate:</p>
+                                    <p className="text-lg font-semibold">{record.occupancy_rate}%</p>
+                                </div>
+                                <div className="w-1/2">
+                                    <p className="text-sm text-gray-500">Observation:</p>
+                                    <p className="text-lg font-semibold">{record.observation}</p>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Displaying other marketRecord */}
-
-                {/* Add additional sections for other marketRecord */}
+                <div className='flex justify-between mx-4 border-t-1 p-2 border-b-1'>
+                    <button
+                        onClick={() => { }}
+                        type="button"
+                        style={{ backgroundColor: 'orange' }}
+                        className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2 mr-4"
+                    > <span className=""> {'<< Rejet'} </span></button>
+                    <button
+                        onClick={() => { }}
+                        type="button"
+                        style={{ backgroundColor: 'green' }}
+                        className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2"
+                    > <span className="ml-1"> {'Approve >>'} </span></button>
+                </div>
             </div>
         </div>
     )
