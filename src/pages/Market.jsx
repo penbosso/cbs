@@ -3,10 +3,10 @@ import { GridComponent, ColumnsDirective, ColumnDirective, Page, Selection, Inje
 import { Header, MarketModal } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import { MdOutlineCategory, MdOutlineCancel } from 'react-icons/md';
-import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { AiFillEdit, AiTwotoneDelete } from 'react-icons/ai';
-import { useGetMarketsQuery } from '../services/marketService';
 import { Space, Button, message } from 'antd';
+import { TooltipComponent } from '@syncfusion/ej2-react-popups';
+import { useGetMarketsQuery } from '../services/marketService';
 
 const Market = () => {
   const toolbarOptions = ['Search'];

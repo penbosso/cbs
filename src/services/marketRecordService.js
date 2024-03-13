@@ -9,7 +9,11 @@ const initialState = marketrecordsAdapter.getInitialState();
 export const marketrecordService = apiSlice.injectEndpoints({
     endpoints: builder => ({
         getMarketRecords: builder.query({            
-            query: () => '/market/location-list/',
+            query: () => '/market/all-report-list/',
+            providesTags: ['MarketRecord']
+        }),
+        getUserMarketRecords: builder.query({            
+            query: () => '/market/user-report-list',
             providesTags: ['MarketRecord']
         }),
         getMarketRecordByMarketRecordId: builder.query({
@@ -52,6 +56,7 @@ export const marketrecordService = apiSlice.injectEndpoints({
 
 export const {
     useGetMarketRecordsQuery,
+    useGetUserMarketRecordsQuery,
     useGetMarketRecordByMarketRecordIdQuery,
     useAddMarketRecordMutation,
     useUpdateMarketRecordMutation,

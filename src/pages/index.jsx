@@ -8,4 +8,5 @@ export { default as Missing } from './Missing';
 export { default as Unauthorized } from './Unauthorized';
 export { default as Signin } from './Signin';
 export { default as Signup } from './Signup';
+export { default as MarketRecordDetail } from './MarketRecordDetail';
 export { default as ForgotPassword } from './ForgotPassword';

@@ -3,7 +3,7 @@ import { Button, Radio, Form, Input, Select, Upload, message, Row, Col } from 'a
 import { MdOutlineCancel } from 'react-icons/md';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useAddMarketRecordMutation, useGetMarketRecordByMarketRecordIdQuery, useUpdateMarketRecordMutation } from '../services/marketRecordService';
-import { useGetMarketsQuery } from '../services/marketService';
+import { useGetMarketsQuery, useGetUserLocationMarketsQuery } from '../services/marketService';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import Loading from './Loading';
 
@@ -18,20 +18,19 @@ const layout = {
 };
 
 const MarketRecordModal = ({ marketRecordId }) => {
+    
     const { setIsClicked, initialState, myRestaurant, } = useStateContext();
     const [addMarketRecord, { isLoading: addLoading }, error] = useAddMarketRecordMutation();
-    const [updateMarketRecord, { isLoading: editLoading }] = useUpdateMarketRecordMutation();
     const [form] = Form.useForm();
     const { data: marketRecord } = useGetMarketRecordByMarketRecordIdQuery(marketRecordId ? marketRecordId : skipToken);
-    const { data } = useGetMarketsQuery();
+    const { data } = useGetUserLocationMarketsQuery();
     const markets = data?.markets;
-    const [image_url, setImage_url] = useState('')
 
 
     const [records, setRecords] = useState([])
 
     const handleSubmit = (values) => {
-        setRecords([...records, { ...values, component_description: 'not needed' }])
+        setRecords([...records, { ...values}])
         form.resetFields();
     }
 
@@ -40,10 +39,8 @@ const MarketRecordModal = ({ marketRecordId }) => {
         if (marketRecordId) {
 
         } else {
-            const currentDate = new Date();
-            const currentQuarter = Math.floor(currentDate.getMonth() / 3) + 1;
             const newMarketRecord = {
-                market: selectMarket, season: `Q ${currentQuarter}`, year: currentDate.getFullYear(), records: records
+                market: selectMarket, records: records
             }
             console.log(newMarketRecord);
             try {
@@ -67,7 +64,7 @@ const MarketRecordModal = ({ marketRecordId }) => {
     }
 
 
-    const [selectMarket, setSelectMarket] = useState('Rusizi');
+    const [selectMarket, setSelectMarket] = useState(null);
 
 
 

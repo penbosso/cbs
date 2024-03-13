@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { GridComponent, ColumnsDirective, ColumnDirective, Group, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject } from '@syncfusion/ej2-react-grids';
 import { Header, DropdownButton, MarketRecordModal } from '../components';
-import { useGetOrderByRestaurantIdQuery } from '../services/marketRecordService';
-import { useStateContext } from '../contexts/ContextProvider';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useGetOrderByRestaurantIdQuery, useGetUserMarketRecordsQuery } from '../services/marketRecordService';
+import { useStateContext } from '../contexts/ContextProvider'
+import { AiFillEdit, AiTwotoneDelete, AiOutlineFolderView } from 'react-icons/ai';
+import { Space, Button, message } from 'antd';
+import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { MdAddShoppingCart } from 'react-icons/md';
 import { VscServerProcess } from "react-icons/vsc";
+import { useNavigate } from 'react-router-dom';
 
 const MarketRecord = () => {
-  const { currentColor, handleClickWithCatId, handleClick, isClicked } = useStateContext();
+  const { currentColor, handleClickWithCatId, handleClick, isClicked, setMarketRecord, marketRecord } = useStateContext();
   const [proccessed, setProcessed] = useState(false);
-  const marketRecordtatusAction = (props) => (
-    <DropdownButton order={props} />
-  );
+  const navigate = useNavigate()
   const occupanyRateTemp = (props) => {
     return <span>1</span>
   }
@@ -22,7 +23,7 @@ const MarketRecord = () => {
       style={{ background: 'black' }}
       className="text-white py-1 px-2 capitalize rounded-2xl text-md"
     >
-      {props.status}
+      {props?.status}
     </button>
   );
   const gridOrderImage = (props) => (
@@ -35,74 +36,65 @@ const MarketRecord = () => {
     </div>
   );
 
+  const ActionTempplate = (props) => {
+    return (
+      <Space size="middle">
+        <TooltipComponent
+          content="View"
+        >
+          <button type='button' className="text-xl" onClick={() => {
+            setMarketRecord(props);
+            navigate('/market-record-detail')
+          }}> <AiOutlineFolderView /> </button>
+        </TooltipComponent>
+
+        <TooltipComponent
+          content="Delete"
+        >
+          <button type='button' className="text-xl" onClick={() => { }}> <AiTwotoneDelete color='red' /> </button>
+        </TooltipComponent>
+      </Space>
+    )
+  };
+
   const groupOptions = { showGroupedColumn: false, columns: ['group_id'], showDropArea: false, showToggleButton: false };
 
   const marketrecordGrid = [
     {
       field: 'season',
       headerText: 'Season',
-      textAlign: 'Center',
-      width: '100',
-    },
-    {
-      field: 'item_name',
-      headerText: 'Component',
       width: '150',
       textAlign: 'Center',
     },
     {
-      field: 'location',
-      headerText: 'District',
-      width: '100',
+      field: 'market',
+      headerText: 'Market',
+      width: '150',
       textAlign: 'Center',
     },
     {
       headerText: 'Status',
-      template: gridMarketRecordtatus,
-      field: 'OrderItems',
+      field: 'status',
       textAlign: 'Center',
       width: '120',
     },
     {
-      field: 'total_number_of_places_available',
-      headerText: '# Places_available',
+      field: 'year',
+      headerText: 'Year',
       width: '100',
       textAlign: 'Center',
-    },
-    {
-      field: 'number_of_places_rented',
-      headerText: '# Places rented',
-      width: '120',
-      textAlign: 'Center',
-    },
-    {
-      field: 'createdAt',
-      headerText: 'Created on',
-      width: '120',
-      textAlign: 'Center',
-    },
-    {
-      headerText: 'Occupancy rate',
-      width: '120',
-      textAlign: 'Center',
-      template: occupanyRateTemp
-    },
-    {
-      headerText: 'Observation',
-      width: '120',
-      textAlign: 'Center',
-      field: 'observation'
     },
     {
       headerText: 'Action',
       width: '150',
       textAlign: 'Center',
-      template: marketRecordtatusAction
+      template: ActionTempplate
     },
   ];
 
-  const { myRestaurant } = useStateContext();
-  const { data: marketrecord } = {};
+  const { data } = useGetUserMarketRecordsQuery();
+  console.log(data);
+  const marketrecord = data?.reports
   const editing = { allowDeleting: true, allowEditing: true };
   const contextMenuItems = [
     'AutoFit',
@@ -131,9 +123,9 @@ const MarketRecord = () => {
           <button
             onClick={() => { setProcessed(!proccessed) }}
             type="button"
-            style={{ backgroundColor: proccessed? 'orange' : 'green' }}
+            style={{ backgroundColor: proccessed ? 'orange' : 'green' }}
             className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2 mr-4"
-          > <VscServerProcess /> <span className=""> {proccessed? 'To be processed' : 'Processed'} </span></button>
+          > <VscServerProcess /> <span className=""> {proccessed ? 'To be processed' : 'Processed'} </span></button>
           <button
             onClick={() => { handleClick('marketModal') }}
             type="button"

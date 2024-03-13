@@ -4,7 +4,7 @@ import Loading from './Loading';
 import { message } from 'antd';
 
 const DropdownButton = ({ market }) => {
-  const [selectedOption, setSelectedOption] = useState(market.status);
+  const [selectedOption, setSelectedOption] = useState(market?.status);
   const [updateMarket, { isLoading: updateLoading }] = useUpdateMarketMutation();
   const handleOptionChange = async (option) => {
     console.log(option);

@@ -434,22 +434,22 @@ export const links = [
     title: '',
     links: [
       {
-        allowedRoles: [1, 10, 103, 'creator', 'admin'],
+        allowedRoles: ['creator', 'admin'],
         name: 'dashboard',
         icon: <FiShoppingBag />,
       },
       {
-        allowedRoles: [1, 10, 103, 'creator', 'admin'],
+        allowedRoles: ['creator', 'admin'],
         name: 'market-record',
         icon: <AiOutlineShoppingCart />,
       },
       {
-        allowedRoles: [1, 10, 103, 'creator', 'admin'],
+        allowedRoles: ['creator', 'admin'],
         name: 'market',
         icon: <SiMarketo />,
       },
       {
-        allowedRoles: [1, 10, 103, 'creator', 'admin'],
+        allowedRoles: ['creator', 'admin'],
         name: 'district',
         icon: <MdOutlineCategory />,
       },

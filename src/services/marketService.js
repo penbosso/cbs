@@ -12,6 +12,10 @@ export const marketService = apiSlice.injectEndpoints({
             query: () => '/market/market-list/',
             providesTags: ['Market']
         }),
+        getUserLocationMarkets: builder.query({
+            query: () => '/market/user-location-market-list/',
+            providesTags: ['Market']
+        }),
         getMarketByMarketId: builder.query({
             query: id => `/markets/${id}`,
             transformResponse: responseData => {
@@ -58,6 +62,7 @@ export const marketService = apiSlice.injectEndpoints({
 
 export const {
     useGetMarketsQuery,
+    useGetUserLocationMarketsQuery,
     useGetMarketByMarketIdQuery,
     useAddMarketMutation,
     useUpdateMarketMutation,

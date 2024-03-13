@@ -13,7 +13,7 @@ const initialState = {
   marketModal: false,
   marketRecordModal: false,
   categoryId: null,
-  menuItemId: null
+  menuItemId: null,
 };
 
 export const ContextProvider = ({ children }) => {
@@ -25,7 +25,7 @@ export const ContextProvider = ({ children }) => {
   const [isClicked, setIsClicked] = useState(initialState);
   const [user, setUser] = useState({emai:'bchristiankelein@gmailcom', role:103, first_name:'Chris', first_name: 'Bosso'});
   const [authUser, setAuthUser] = useState();
-  const [myRestaurant, setMyRestaurant] = useState({});
+  const [marketRecord, setMarketRecord] = useState({});
 
   useEffect(() => {
     const unsubscribe = () =>{}
@@ -52,7 +52,7 @@ export const ContextProvider = ({ children }) => {
       user, setUser, authUser, currentColor, currentMode, activeMenu, screenSize,
       setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, 
       setCurrentColor, setCurrentMode, handleClickWithCatId, handleClickWithItemId,
-      setMode, setColor, themeSettings, setThemeSettings, myRestaurant, setMyRestaurant
+      setMode, setColor, themeSettings, setThemeSettings, marketRecord, setMarketRecord
     }}>
       {children}
     </StateContext.Provider>
