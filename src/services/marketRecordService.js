@@ -20,9 +20,25 @@ export const marketrecordService = apiSlice.injectEndpoints({
             query: id => `/marketrecords/${id}`,
             providesTags: ['MarketRecord']
         }),
+        getMarketRecordCommentsByMarketRecordId: builder.query({
+            query: id => `/market/report-comments/${id}/`,
+            providesTags: ['MarketRecord']
+        }),
         addMarketRecord: builder.mutation({
             query: initialMarketRecord => ({
                 url: '/market/report-create/',
+                method: 'POST',
+                body: {
+                    ...initialMarketRecord,
+                    marketrecordId: Number(initialMarketRecord.marketrecordId),
+                    date: new Date().toISOString(),
+                }
+            }),
+            invalidatesTags: ['MarketRecord']
+        }),
+        updateMarketRecordProgress: builder.mutation({
+            query: initialMarketRecord => ({
+                url: `/market/report-approve/${initialMarketRecord.id}/`,
                 method: 'POST',
                 body: {
                     ...initialMarketRecord,
@@ -57,8 +73,10 @@ export const marketrecordService = apiSlice.injectEndpoints({
 export const {
     useGetMarketRecordsQuery,
     useGetUserMarketRecordsQuery,
+    useGetMarketRecordCommentsByMarketRecordIdQuery,
     useGetMarketRecordByMarketRecordIdQuery,
     useAddMarketRecordMutation,
+    useUpdateMarketRecordProgressMutation,
     useUpdateMarketRecordMutation,
     useDeleteMarketRecordMutation
 } = marketrecordService;
