@@ -18,7 +18,7 @@ const layout = {
 };
 
 const MarketRecordModal = ({ marketRecordId }) => {
-    
+
     const { setIsClicked, initialState, myRestaurant, } = useStateContext();
     const [addMarketRecord, { isLoading: addLoading }, error] = useAddMarketRecordMutation();
     const [form] = Form.useForm();
@@ -30,7 +30,7 @@ const MarketRecordModal = ({ marketRecordId }) => {
     const [records, setRecords] = useState([])
 
     const handleSubmit = (values) => {
-        setRecords([...records, { ...values}])
+        setRecords([...records, { ...values }])
         form.resetFields();
     }
 
@@ -99,6 +99,39 @@ const MarketRecordModal = ({ marketRecordId }) => {
 
                     {selectMarket &&
                         (<div className="shadow overflow-y-auto max-h-400 sm:rounded-md">
+
+
+                            {records.length > 0 &&
+                                (
+                                    <div class="overflow-y-auto max-h-100 ">
+                                        <table class="table-auto border-collapse border border-gray-300">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border border-gray-300 px-4 py-2">Component</th>
+                                                    <th class="border border-gray-300 px-4 py-2">No. places available</th>
+                                                    <th class="border border-gray-300 px-4 py-2">No. places rented</th>
+                                                    <th class="border border-gray-300 px-4 py-2">Obseravation</th>
+                                                </tr>
+                                            </thead>
+                                            {records.map(record => {
+                                                return (<tr> <td class="border border-gray-300 px-4 py-2">{record.component_name}</td>
+                                                    <td class="border border-gray-300 px-4 py-2">{record.total_number_places_available}</td>
+                                                    <td class="border border-gray-300 px-4 py-2">{record.number_places_rented}</td>
+                                                    <td class="border border-gray-300 px-4 py-2">{record.observation}</td></tr>)
+                                            })}
+                                        </table>
+
+                                        <div className='flex justify-center p-4'>
+                                            <button onClick={() => handleOk()} type="button" style={{ backgroundColor: '#078ece' }}
+                                                className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl px-4 py-2">
+                                                Save
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                )
+
+                            }
                             <div className="px-4 py-5 bg-white sm:p-6">
 
 
@@ -170,38 +203,6 @@ const MarketRecordModal = ({ marketRecordId }) => {
                                         </Button>
                                     </Form.Item>
                                 </Form>
-
-                                {records.length > 0 &&
-                                    (
-                                        <div class="overflow-y-auto max-h-100 ">
-                                            <table class="table-auto border-collapse border border-gray-300">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="border border-gray-300 px-4 py-2">Component</th>
-                                                        <th class="border border-gray-300 px-4 py-2">No. places available</th>
-                                                        <th class="border border-gray-300 px-4 py-2">No. places rented</th>
-                                                        <th class="border border-gray-300 px-4 py-2">Obseravation</th>
-                                                    </tr>
-                                                </thead>
-                                                {records.map(record => {
-                                                    return (<tr> <td class="border border-gray-300 px-4 py-2">{record.component_name}</td>
-                                                        <td class="border border-gray-300 px-4 py-2">{record.total_number_places_available}</td>
-                                                        <td class="border border-gray-300 px-4 py-2">{record.number_places_rented}</td>
-                                                        <td class="border border-gray-300 px-4 py-2">{record.observation}</td></tr>)
-                                                })}
-                                            </table>
-
-                                            <div className='flex justify-center p-4'>
-                                                <button onClick={() => handleOk()} type="button" style={{ backgroundColor: '#078ece' }}
-                                                    className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl px-4 py-2">
-                                                    Save
-                                                </button>
-
-                                            </div>
-                                        </div>
-                                    )
-
-                                }
                             </div>
                         </div>)}
                 </div> : <Loading />}

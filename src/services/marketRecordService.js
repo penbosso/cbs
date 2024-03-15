@@ -8,12 +8,20 @@ const initialState = marketrecordsAdapter.getInitialState();
 
 export const marketrecordService = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        getMarketRecords: builder.query({            
+        getMarketRecords: builder.query({
             query: () => '/market/all-report-list/',
             providesTags: ['MarketRecord']
         }),
-        getUserMarketRecords: builder.query({            
-            query: () => '/market/user-report-list',
+        getUserMarketRecords: builder.query({
+            query: (user) => {
+                if (user?.role.toLowerCase() == 'admin') {
+                    return '/market/all-report-list/'
+                } else if (user?.role.toLowerCase() == 'creator') {
+                    return '/market/user-report-list/'
+                } else {
+                    return '/market/location-report-list'
+                }
+            },
             providesTags: ['MarketRecord']
         }),
         getMarketRecordByMarketRecordId: builder.query({
@@ -40,11 +48,7 @@ export const marketrecordService = apiSlice.injectEndpoints({
             query: initialMarketRecord => ({
                 url: `/market/report-approve/${initialMarketRecord.id}/`,
                 method: 'POST',
-                body: {
-                    ...initialMarketRecord,
-                    marketrecordId: Number(initialMarketRecord.marketrecordId),
-                    date: new Date().toISOString(),
-                }
+                body: initialMarketRecord.data
             }),
             invalidatesTags: ['MarketRecord']
         }),

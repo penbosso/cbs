@@ -9,9 +9,13 @@ import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { MdAddShoppingCart } from 'react-icons/md';
 import { VscServerProcess } from "react-icons/vsc";
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux"
+import { selectCurrentUser } from '../services/authSlice'
 
 const MarketRecord = () => {
   const { currentColor, handleClickWithCatId, handleClick, isClicked, setMarketRecord, marketRecord } = useStateContext();
+  const currentUser = useSelector(selectCurrentUser)
+
   const [proccessed, setProcessed] = useState(false);
   const navigate = useNavigate()
   const occupanyRateTemp = (props) => {
@@ -59,6 +63,7 @@ const MarketRecord = () => {
 
   const groupOptions = { showGroupedColumn: false, columns: ['group_id'], showDropArea: false, showToggleButton: false };
 
+  const toolbarOptions = ['Search'];
   const marketrecordGrid = [
     {
       field: 'season',
@@ -92,7 +97,7 @@ const MarketRecord = () => {
     },
   ];
 
-  const { data } = useGetUserMarketRecordsQuery();
+  const { data } = useGetUserMarketRecordsQuery(currentUser);
   console.log(data);
   const marketrecord = data?.reports
   const editing = { allowDeleting: true, allowEditing: true };
@@ -142,6 +147,7 @@ const MarketRecord = () => {
         pageSettings={{ pageSize: 8 }}
         // allowGrouping={true} 
         // groupSettings={groupOptions}
+        toolbar={toolbarOptions}
         allowSorting
         allowExcelExport
         allowPdfExport

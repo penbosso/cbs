@@ -2,6 +2,7 @@ import React from 'react';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { dropdownData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
+import MarketRecord from './MarketRecord';
 
 const DropDown = ({ currentMode }) => (
   <div className="w-28 border-1 border-color px-2 py-1 rounded-md">
@@ -15,6 +16,7 @@ const Dashboard = () => {
   return (
 
     <div className="mt-2">
+      <MarketRecord />
     </div>
   );
 };
