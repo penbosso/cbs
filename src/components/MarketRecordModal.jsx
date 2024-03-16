@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Radio, Form, Input, Select, Upload, message, Row, Col } from 'antd';
+import { Button, Radio, Form, Input, InputNumber, message, Row, Col } from 'antd';
 import { MdOutlineCancel } from 'react-icons/md';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useAddMarketRecordMutation, useGetMarketRecordByMarketRecordIdQuery, useUpdateMarketRecordMutation } from '../services/marketRecordService';
@@ -25,6 +25,10 @@ const MarketRecordModal = ({ marketRecordId }) => {
     const { data: marketRecord } = useGetMarketRecordByMarketRecordIdQuery(marketRecordId ? marketRecordId : skipToken);
     const { data } = useGetUserLocationMarketsQuery();
     const markets = data?.markets;
+
+    const handleRemoveRecord = (record) => {
+        setRecords(records.filter((r) => r.id !== record.id));
+    };
 
 
     const [records, setRecords] = useState([])
@@ -56,6 +60,7 @@ const MarketRecordModal = ({ marketRecordId }) => {
             } catch (e) {
                 message.error(e);
             }
+            setRecords([])
         }
     }
     const handleCancel = () => {
@@ -117,7 +122,11 @@ const MarketRecordModal = ({ marketRecordId }) => {
                                                 return (<tr> <td class="border border-gray-300 px-4 py-2">{record.component_name}</td>
                                                     <td class="border border-gray-300 px-4 py-2">{record.total_number_places_available}</td>
                                                     <td class="border border-gray-300 px-4 py-2">{record.number_places_rented}</td>
-                                                    <td class="border border-gray-300 px-4 py-2">{record.observation}</td></tr>)
+                                                    <td class="border border-gray-300 px-4 py-2">{record.observation}</td>
+                                                    <td class="border border-gray-300 px-4 py-2">
+                                                        <button onClick={() => handleRemoveRecord(record)} className="text-red-500 font-bold px-2 focus:outline-none">X</button>
+                                                    </td>
+                                                </tr>)
                                             })}
                                         </table>
 
@@ -159,15 +168,9 @@ const MarketRecordModal = ({ marketRecordId }) => {
                                             <Form.Item
                                                 label="No. available"
                                                 name="total_number_places_available"
-                                                rules={[{ required: true, message: 'Please enter the cost!' }]}
+                                                rules={[{ required: true, message: 'Please enter the total number places available!' }]}
                                             >
-                                                <Input
-                                                    formatter={(value) =>
-                                                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                                                    }
-                                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                                    step={1}
-                                                    precision={0}
+                                                <InputNumber
                                                 />
                                             </Form.Item>
 
@@ -177,16 +180,9 @@ const MarketRecordModal = ({ marketRecordId }) => {
                                             <Form.Item
                                                 label="No. rented"
                                                 name="number_places_rented"
-                                                rules={[{ required: true, message: 'Please enter the cost!' }]}
+                                                rules={[{ required: true, message: 'Please enter the number of places rented!' }]}
                                             >
-                                                <Input
-                                                    formatter={(value) =>
-                                                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                                                    }
-                                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                                    step={1}
-                                                    precision={0}
-                                                />
+                                                <InputNumber />
                                             </Form.Item>
 
                                             <Form.Item label="Observation" name="observation">

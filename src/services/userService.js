@@ -13,6 +13,10 @@ export const userService = apiSlice.injectEndpoints({
             query: () => '/auth/all-users/',
             providesTags: ['User']
         }),
+        getViewers: builder.query({            
+            query: () => '/auth/viewers-list/',
+            providesTags: ['User']
+        }),
         getUserByUserId: builder.query({
             query: id => `/users/${id}`,
             providesTags: ['User']
@@ -53,6 +57,7 @@ export const userService = apiSlice.injectEndpoints({
 
 export const {
     useGetUsersQuery,
+    useGetViewersQuery,
     useGetUserByUserIdQuery,
     useAddUserMutation,
     useUpdateUserMutation,

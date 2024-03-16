@@ -23,9 +23,10 @@ export const ContextProvider = ({ children }) => {
   const [themeSettings, setThemeSettings] = useState(false);
   const [activeMenu, setActiveMenu] = useState(true);
   const [isClicked, setIsClicked] = useState(initialState);
-  const [user, setUser] = useState({emai:'bchristiankelein@gmailcom', role:103, first_name:'Chris', first_name: 'Bosso'});
+  const [editmarketrecord, setEditMarketRecord] = useState(false);
   const [authUser, setAuthUser] = useState();
-  const [marketRecord, setMarketRecord] = useState({});
+  const [editMarket, setEditMarket] = useState();
+  const [marketRecord, setMarketRecord] = useState({ market: '', records: [] });
 
   useEffect(() => {
     const unsubscribe = () =>{}
@@ -49,9 +50,9 @@ export const ContextProvider = ({ children }) => {
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
     <StateContext.Provider value={{
-      user, setUser, authUser, currentColor, currentMode, activeMenu, screenSize,
+      editmarketrecord, setEditMarketRecord, authUser, currentColor, currentMode, activeMenu, screenSize,
       setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, 
-      setCurrentColor, setCurrentMode, handleClickWithCatId, handleClickWithItemId,
+      setCurrentColor, setCurrentMode, handleClickWithCatId, handleClickWithItemId, editMarket, setEditMarket,
       setMode, setColor, themeSettings, setThemeSettings, marketRecord, setMarketRecord
     }}>
       {children}

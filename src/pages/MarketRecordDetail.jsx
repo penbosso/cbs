@@ -1,37 +1,32 @@
 import React, { useState } from 'react'
 import { Header, Loading } from '../components'
 import { useStateContext } from '../contexts/ContextProvider'
-import { useGetMarketRecordCommentsByMarketRecordIdQuery, useUpdateMarketRecordProgressMutation } from '../services/marketRecordService'
+import { useAddMarketRecordMutation, useGetMarketRecordCommentsByMarketRecordIdQuery, useUpdateMarketRecordProgressMutation } from '../services/marketRecordService'
 import { skipToken } from '@reduxjs/toolkit/query'
 import { MdOutlineCategory, MdOutlineCancel } from 'react-icons/md';
 import { Space, Button, message } from 'antd';
 import { useSelector } from "react-redux"
 import { selectCurrentUser } from '../services/authSlice'
+import { useGetViewersQuery } from '../services/userService';
+import { useGetUserLocationMarketsQuery, useUpdateMarketMutation } from '../services/marketService'
+import { formatDate } from '../util/helper'
 
 const MarketRecordDetail = () => {
     const currentUser = useSelector(selectCurrentUser)
-    const { marketRecord } = useStateContext()
+    const { marketRecord, setMarketRecord, editMarketRecord, setEditMarketRecord } = useStateContext()
 
-    const { data: comments, isLoading: commentLoading } = useGetMarketRecordCommentsByMarketRecordIdQuery(marketRecord?.id ? marketRecord.id : skipToken)
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-        });
-    };
+    const { data: comments, isLoading: commentLoading } = useGetMarketRecordCommentsByMarketRecordIdQuery(marketRecord?.id ? marketRecord?.id : skipToken)
 
     const [updateMarketRecordProgress, { isLoading: updateLoading }, error] = useUpdateMarketRecordProgressMutation();
 
     const [action, setAction] = useState(null)
     const [comment, setComment] = useState('')
     const [selectedViewers, setSelectedViewers] = useState([]);
+    const [selectedViewerIds, setSelectedViewerIds] = useState([]);
     const [selectedViewer, setSelectedViewer] = useState('');
-    const viewers = ['Viewer 1', 'Viewer 2', 'Viewer 3', 'Viewer 4'];
+
+    const { data } = useGetViewersQuery();
+    const viewers = data?.users
 
     const handleSelectChange = (e) => {
         setSelectedViewer(e.target.value);
@@ -39,21 +34,23 @@ const MarketRecordDetail = () => {
 
     const handleAddViewer = () => {
         if (selectedViewer && !selectedViewers.includes(selectedViewer)) {
-            setSelectedViewers([...selectedViewers, selectedViewer]);
+            setSelectedViewers([...selectedViewers, `${selectedViewer.firstname} ${selectedViewer.lastname}`]);
+            setSelectedViewerIds([...selectedViewerIds, selectedViewer.id])
             setSelectedViewer('');
         }
     };
 
     const handleRemoveViewer = (viewer) => {
-        setSelectedViewers(selectedViewers.filter((v) => v !== viewer));
+        setSelectedViewers(selectedViewers.filter((v) => `${v.firstname} ${v.lastname}` !== `${viewer.firstname} ${viewer.lastname}`));
+        setSelectedViewerIds(selectedViewerIds.filter((v) => v.id !== viewer.id))
     };
 
     const handleAction = async () => {
         try {
             const act = action == 'rollback' ? action : 'approve'
             const result = action == 'forward' ?
-                await updateMarketRecordProgress({ id: marketRecord.id, data: { action: act, comment: comment, viewer: selectedViewers } })
-                : await updateMarketRecordProgress({ id: marketRecord.id, data: { action: act, comment: comment } });
+                await updateMarketRecordProgress({ id: marketRecord?.id, data: { action: act, comment: comment, viewer: selectedViewerIds } })
+                : await updateMarketRecordProgress({ id: marketRecord?.id, data: { action: act, comment: comment } });
 
             console.log(result);
             if (result?.error) {
@@ -69,54 +66,145 @@ const MarketRecordDetail = () => {
         }
     }
 
-    useUpdateMarketRecordProgressMutation()
+
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setMarketRecord({ ...marketRecord, [name]: value });
+    };
+
+    const handleRecordChange = (index, field, value) => {
+        const updatedRecords = [...marketRecord.records];
+        updatedRecords[index][field] = value;
+        setMarketRecord({ ...marketRecord, records: updatedRecords });
+    };
+
+    const handleAddRecord = () => {
+
+        const hasEmptyComponentName = marketRecord.records.some(record => record.component_name.trim() === '');
+        const hasValidNumbers = marketRecord.records.some(record => !record.total_number_places_available > 0 || !record.number_places_rented === '');
+        if (hasEmptyComponentName || hasValidNumbers) {
+            message.error("Provide data for components, number of places available and rented")
+            return;
+        }
+        if (marketRecord?.market.trim() === '') {
+            message.error("Make sure to selet a market")
+            return;
+        }
+
+        if (marketRecord.records.some(record => record.total_number_places_available < record.number_places_rented)) {
+            message.error("Number of placess available can not be less that places rented")
+            return;
+        }
+
+        setMarketRecord({
+            ...marketRecord,
+            records: [...marketRecord.records, {
+                component_name: '',
+                total_number_places_available: 0,
+                number_places_rented: 0,
+                observation: ''
+            }]
+        });
+    };
+
+    const handleRemoveRecord = (index) => {
+        const updatedRecords = [...marketRecord.records];
+        updatedRecords.splice(index, 1);
+        setMarketRecord({ ...marketRecord, records: updatedRecords });
+    };
+
+    const [addMarketRecord, { isLoading: addLoading }] = useAddMarketRecordMutation();
+    const [updateMarketRecord, { isLoading: editLoading }] = useUpdateMarketMutation();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (editMarketRecord) {
+            console.log(marketRecord);
+            try {
+                const result = await updateMarketRecord(marketRecord);
+                console.log(result);
+                if (result.error) {
+                    message.error(result.error.data.message)
+                    setMarketRecord(marketRecord)
+                    setEditMarketRecord(false)
+                } else {
+                    message.success(result.data.message)
+                    setMarketRecord(result.data.report)
+                }
+
+            } catch (e) {
+                message.error(e);
+            }
+        } else {
+            console.log(marketRecord);
+            try {
+                const result = await addMarketRecord(marketRecord);
+                console.log(result);
+                if (result.error) {
+                    message.error(result.error.data.message)
+                    setMarketRecord(marketRecord)
+                } else {
+                    message.success(result.data.message)
+                    setMarketRecord(result.data.report)
+
+                }
+
+            } catch (e) {
+                message.error(e);
+            }
+        }
+    };
+
+    const { data: marketRecordList } = useGetUserLocationMarketsQuery();
+    const markets = marketRecordList?.markets;
 
     return (
         <div className="m-2 md:m-2 mt-2 p-2 md:p-4 bg-white rounded-3xl dark:bg-secondary-dark-bg">
             <div className='flex justify-between items-center' >
-                <Header category="Page" title="Market Record Detail" />
+                <Header category="Page" title={marketRecord?.market == '' ? "Add Market Record" : !editMarketRecord ? "Market Record Detail" : "Edit Market Record"} />
             </div>
-            <div className="container mx-auto px-4 py-8">
+            {(!editMarketRecord && !marketRecord?.id == '') ? (<div className="container mx-auto px-4 py-8">
                 <div className='grid grid-cols-2 gap-4 mb-8'>
                     <div>
-                        <h1 className="text-2xl font-bold mb-4">{marketRecord.market}</h1>
-                        <p className="text-lg mb-4">{marketRecord.season} - {marketRecord.year}</p>
+                        <h1 className="text-2xl font-bold mb-4">{marketRecord?.market}</h1>
+                        <p className="text-lg mb-4">{marketRecord?.season} - {marketRecord?.year}</p>
 
                         <h2 className="text-xl font-bold mb-2">Created By:</h2>
-                        <p className="mb-4">{marketRecord.created_by ? `${marketRecord.created_by.firstname} ${marketRecord.created_by.lastname}` : 'Unknown'}</p>
+                        <p className="mb-4">{marketRecord?.created_by ? `${marketRecord?.created_by.firstname} ${marketRecord?.created_by.lastname}` : 'Unknown'}</p>
+                        <p className='text-xs text-blue-500'> <span className='text-gray-700 font-bold'>On: </span> {marketRecord?.created_at ? `${formatDate(marketRecord?.created_at)}` : ''}</p>
 
                     </div>
 
                     <div className="mb-8">
                         <h2 className="text-xl font-bold mb-2">Other Details:</h2>
-                        <p> <span className='font-bold p-2'>Status:</span> <span className='uppercase' >{marketRecord.status}</span></p>
-                        {marketRecord.verified_by ? (
+                        <p> <span className='font-bold p-2'>Status:</span> <span className='uppercase' >{marketRecord?.status}</span></p>
+                        {marketRecord?.verified_by ? (
                             <p>
                                 <span className='font-bold p-2'>Verified By:</span>
-                                {`${marketRecord.verified_by.firstname} ${marketRecord.verified_by.lastname}, ${marketRecord.verified_by.position}`}
-                                <span className='text-xs text-blue-400'> ({marketRecord.verified_by.email})</span>
+                                {`${marketRecord?.verified_by.firstname} ${marketRecord?.verified_by.lastname}, ${marketRecord?.verified_by.position}`}
+                                <span className='text-xs text-blue-400'> ({marketRecord?.verified_by.email})</span>
                             </p>
                         ) : (
                             <p>
                                 <span className='font-bold p-2'>Verified By:</span> PENDDING
                             </p>
                         )}
-                        {marketRecord.approved_by ? (
+                        {marketRecord?.approved_by ? (
                             <p>
                                 <span className='font-bold p-2'>Approved By:</span>
-                                {`${marketRecord.approved_by.firstname} ${marketRecord.approved_by.lastname}, ${marketRecord.approved_by.position}`}
-                                <span className='text-xs text-blue-400'> ({marketRecord.approved_by.email})</span>
+                                {`${marketRecord?.approved_by.firstname} ${marketRecord?.approved_by.lastname}, ${marketRecord?.approved_by.position}`}
+                                <span className='text-xs text-blue-400'> ({marketRecord?.approved_by.email})</span>
                             </p>
                         ) : (
                             <p>
                                 <span className='font-bold p-2'>Approved By:</span> PENDDING
                             </p>
                         )}
-                        {marketRecord.approved_by ? (
+                        {marketRecord?.approved_by ? (
                             <p>
                                 <span className='font-bold p-2'>Forwarded By:</span>
-                                {`${marketRecord.forwarded_by.firstname} ${marketRecord.forwarded_by.lastname}, ${marketRecord.forwarded_by.position}`}
-                                <span className='text-xs text-blue-400'> ({marketRecord.forwarded_by.email})</span>
+                                {`${marketRecord?.forwarded_by.firstname} ${marketRecord?.forwarded_by.lastname}, ${marketRecord?.forwarded_by.position}`}
+                                <span className='text-xs text-blue-400'> ({marketRecord?.forwarded_by.email})</span>
                             </p>
                         ) : (
                             <p>
@@ -190,13 +278,15 @@ const MarketRecordDetail = () => {
                 )}
 
                 <div><h2 className="font-bold mt-4 ">Action</h2>
-                    {((currentUser.role.toLowerCase() == 'creator') && (marketRecord.status.toLowerCase() == 'rollback')) ?
+                    {((currentUser.role?.toLowerCase() == 'creator') && (marketRecord?.status?.toLowerCase() == 'rollback')) ?
                         <div className='border-t-1 p-2 border-b-1 items-center text-center'>
                             <div className='flex justify-between mx-4 '>
                                 <p>This report has been sent back, kindly read the comment below and make the suggested changes</p>
 
                                 <button
-                                    onClick={() => { /* navigate to edit*/ }}
+                                    onClick={() => {
+                                        setEditMarketRecord(true)
+                                    }}
                                     type="button"
                                     style={{ backgroundColor: 'green' }}
                                     className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2"
@@ -204,7 +294,7 @@ const MarketRecordDetail = () => {
                             </div>
                         </div>
                         :
-                        ((currentUser.role.toLowerCase() == 'verifier') && (marketRecord.status.toLowerCase() == 'pendding')) ?
+                        ((currentUser.role?.toLowerCase() == 'verifier') && (marketRecord?.status?.toLowerCase() == 'pendding')) ?
                             <div className='border-t-1 p-2 border-b-1 items-center text-center'>
                                 <div className='p-2 mb-1'>Kindly verify or reject this report</div>
                                 <div className='flex justify-between mx-4 '>
@@ -240,7 +330,7 @@ const MarketRecordDetail = () => {
                                 </div>
                             </div>
                             :
-                            ((currentUser.role.toLowerCase() == 'approver') && (marketRecord.status.toLowerCase() == 'verified')) ?
+                            ((currentUser.role?.toLowerCase() == 'approver') && (marketRecord?.status?.toLowerCase() == 'verified')) ?
                                 <div className='border-t-1 p-2 border-b-1 items-center text-center'>
                                     <div className='p-2 mb-1'>Kindly approve or reject this report</div>
                                     <div className='flex justify-between mx-4 '>
@@ -276,7 +366,7 @@ const MarketRecordDetail = () => {
                                     </div>
                                 </div>
                                 :
-                                ((currentUser.role.toLowerCase() == 'header') && (marketRecord.status.toLowerCase() == 'approved')) ?
+                                ((currentUser.role?.toLowerCase() == 'header') && (marketRecord?.status?.toLowerCase() == 'approved')) ?
                                     <div className='border-t-1 p-2 border-b-1 items-center text-center'>
                                         <div className='p-2 mb-1'>Kindly forward or reject this report</div>
                                         <div className='flex justify-between mx-4 '>
@@ -310,7 +400,7 @@ const MarketRecordDetail = () => {
                                                     >
                                                         <option value="">Select Viewer</option>
                                                         {viewers.map((viewer, index) => (
-                                                            <option key={index} value={viewer}>{viewer}</option>
+                                                            <option key={index} value={viewer.id}>{`${viewer.firstname} ${viewer.lastname}`}</option>
                                                         ))}
                                                     </select>
                                                     <button onClick={handleAddViewer} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
@@ -360,11 +450,11 @@ const MarketRecordDetail = () => {
                                         {`${comment.commented_by.firstname} ${comment.commented_by.lastname}, ${comment.commented_by.position}`}
                                     </p>
                                     <p className="text-gray-700 mb-2"><span className="font-bold">Comment:</span> {comment.comment}</p>
-                                    <p className="text-gray-700"><span className="font-bold">Created At:</span> {formatDate(comment.created_at)}</p>
+                                    <p className=" text-xs text-blue-400"><span className="font-bold"></span> {formatDate(comment.created_at)}</p>
                                 </div>
                             </div>
                         ))
-                    ) : (comments?.length > 0 && currentUser.role.toLowerCase() == 'minister') ? (
+                    ) : (comments?.length > 0 && currentUser.role?.toLowerCase() == 'minister') ? (
                         comments.filter(comment => comment.commented_by.position === "mayor").map((comment, index) => (
                             <div key={index} className="w-full sm:w-1 md:w-1 lg:w-1/2 mb-4 p-4">
                                 <div className="bg-gray-100 rounded-md p-4 text-sm ">
@@ -383,7 +473,101 @@ const MarketRecordDetail = () => {
                 </div>
                 }
 
-            </div>
+            </div>)
+                :
+                <div className='container mx-auto px-4 py-8'>
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <label htmlFor="market" className="block text-gray-700 font-bold mb-2">Market</label>
+
+
+                            <select id="market" name="market" value={marketRecord?.market} onChange={handleChange}
+                                className="appearance-none border rounded py-2 px-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                                <option value="" >Select market</option>
+                                {markets?.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+                            </select>
+                        </div>
+                        {marketRecord.records.map((record, index) => (
+                            <div key={index} className="flex flex-wrap items-center mb-4 px-4  py-1 border border-gray-300 justify-between rounded">
+                                < label className=" text-gray-700 font-bold mb-2 mr-1">{index + 1}</label>
+
+                                <div>
+                                    <label htmlFor={`component_name_${index}`} className="block text-gray-700 text-xs font-bold mr-2">Component Name</label>
+                                    <input
+                                        type="text"
+                                        name="component_name"
+                                        value={record.component_name}
+                                        onChange={(e) => handleRecordChange(index, 'component_name', e.target.value)}
+                                        placeholder="Component Name"
+                                        className="mr-2 mb-2 appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    />
+                                </div>
+                                <div className="items-center mb-2">
+                                    <label htmlFor={`total_number_places_available_${index}`} className="block text-gray-700 font-bold text-xs mr-2">Total Number of Places Available</label>
+                                    <input
+                                        type="number"
+                                        id={`total_number_places_available_${index}`}
+                                        name="total_number_places_available"
+                                        value={record.total_number_places_available}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value) && parseInt(value) >= 0) {
+                                                handleRecordChange(index, 'total_number_places_available', parseInt(value));
+                                            }
+                                        }}
+                                        placeholder="Total Number of Places Available"
+                                        className="mr-2 appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        step="1"
+                                    />
+                                </div>
+                                <div className="items-center mb-2">
+                                    <label htmlFor={`number_places_rented_${index}`} className="block text-gray-700 font-bold text-xs mr-2">Number of Places Rented</label>
+                                    <input
+                                        type="number"
+                                        id={`number_places_rented_${index}`}
+                                        name="number_places_rented"
+                                        value={record.number_places_rented}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value) && parseInt(value) >= 0) {
+                                                handleRecordChange(index, 'number_places_rented', parseInt(value));
+                                            }
+                                        }}
+                                        placeholder="Number of Places Rented"
+                                        className="mr-2 appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        step="1" // Ensure only whole numbers are accepted
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor={`observation_${index}`} className="block text-gray-700 text-xs font-bold mr-2">Observation</label>
+                                    <textarea
+                                        name="observation"
+                                        value={record.observation}
+                                        onChange={(e) => handleRecordChange(index, 'observation', e.target.value)}
+                                        placeholder="Observation"
+                                        className="mr-2 mb-2 appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveRecord(index)}
+                                    className="flex-shrink-0 bg-red-500 hover:bg-red-700 text-white font-bold text-sm py-2 px-2 rounded focus:outline-none focus:shadow-outline"
+                                >
+                                    X
+                                </button>
+                            </div>
+
+
+                        ))}
+                        <div className='flex justify-between mx-8'>
+                            <button type="button" onClick={handleAddRecord} className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add Record</button>
+                            {marketRecord.records.length > 0 ? <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Submit</button> : ''}
+                        </div>
+                    </form>
+                </div>
+            }
         </div>
     )
 }

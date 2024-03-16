@@ -54,7 +54,7 @@ export const marketrecordService = apiSlice.injectEndpoints({
         }),
         updateMarketRecord: builder.mutation({
             query: initialMarketRecord => ({
-                url: `/marketrecords/${initialMarketRecord.id}`,
+                url: `/market/report-update/5${initialMarketRecord.id}/`,
                 method: 'PUT',
                 body: {
                     ...initialMarketRecord,

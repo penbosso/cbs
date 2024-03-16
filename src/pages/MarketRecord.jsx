@@ -11,6 +11,7 @@ import { VscServerProcess } from "react-icons/vsc";
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux"
 import { selectCurrentUser } from '../services/authSlice'
+import { formatDate } from '../util/helper';
 
 const MarketRecord = () => {
   const { currentColor, handleClickWithCatId, handleClick, isClicked, setMarketRecord, marketRecord } = useStateContext();
@@ -30,14 +31,8 @@ const MarketRecord = () => {
       {props?.status}
     </button>
   );
-  const gridOrderImage = (props) => (
-    <div>
-      <img
-        className="rounded-xl h-10 md:ml-3"
-        src={props.image}
-        alt="order-item"
-      />
-    </div>
+  const dateTemplate = (props) => (
+    <span>{formatDate(props.created_at)}</span>
   );
 
   const ActionTempplate = (props) => {
@@ -52,11 +47,11 @@ const MarketRecord = () => {
           }}> <AiOutlineFolderView /> </button>
         </TooltipComponent>
 
-        <TooltipComponent
+        {/* <TooltipComponent
           content="Delete"
         >
           <button type='button' className="text-xl" onClick={() => { }}> <AiTwotoneDelete color='red' /> </button>
-        </TooltipComponent>
+        </TooltipComponent> */}
       </Space>
     )
   };
@@ -84,10 +79,10 @@ const MarketRecord = () => {
       width: '120',
     },
     {
-      field: 'year',
-      headerText: 'Year',
-      width: '100',
+      headerText: 'Created at',
+      width: '150',
       textAlign: 'Center',
+      template: dateTemplate
     },
     {
       headerText: 'Action',
@@ -108,7 +103,7 @@ const MarketRecord = () => {
     'SortDescending',
     'Copy',
     'Edit',
-    'Delete',
+    'Search',
     'Save',
     'Cancel',
     'PdfExport',
@@ -130,23 +125,21 @@ const MarketRecord = () => {
             type="button"
             style={{ backgroundColor: proccessed ? 'orange' : 'green' }}
             className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2 mr-4"
-          > <VscServerProcess /> <span className=""> {proccessed ? 'To be processed' : 'Processed'} </span></button>
+          > <VscServerProcess /> <span className=""> {proccessed ? 'To be processed' : 'All reports'} </span></button>
           <button
-            onClick={() => { handleClick('marketModal') }}
+            onClick={() => { navigate('/market-record-detail') }}
             type="button"
             style={{ backgroundColor: currentColor }}
             className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2"
           > <MdAddShoppingCart /> <span className="ml-1"> Add New </span></button>
         </div>
       </div>
-      {isClicked.marketModal && (<div className="overflow-y-auto max-h-400" ><MarketRecordModal districtId={isClicked.districtId} /> </div>)}
+      
       <GridComponent
         id="gridcomp"
         dataSource={marketrecord}
         allowPaging
-        pageSettings={{ pageSize: 8 }}
-        // allowGrouping={true} 
-        // groupSettings={groupOptions}
+        pageSettings={{ pageSize: 10 }}
         toolbar={toolbarOptions}
         allowSorting
         allowExcelExport

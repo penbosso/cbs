@@ -12,7 +12,7 @@ const Market = () => {
   const toolbarOptions = ['Search'];
   const { currentColor, handleClickWithCatId, handleClick, isClicked } = useStateContext();
   const { data} = useGetMarketsQuery();
-  console.log(data)
+
   const markets = data?.markets
   const deleteMarket = ()=>{};
   const [deleteCat, setDeleteCat] = useState(null);
