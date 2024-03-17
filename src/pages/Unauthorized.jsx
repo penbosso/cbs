@@ -6,7 +6,7 @@ const Unauthorized = () => {
     
     <div className="m-2 md:m-2 mt-2 p-2 md:p-4 bg-white rounded-3xl">
       <Header category="Page" title="Unauthorized" />
-      
+      <p>Your account requires approval. Please reach out to your administrator for account approval</p>
     </div>
   )
 }

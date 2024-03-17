@@ -36,7 +36,7 @@ const District = () => {
 
   const districtGrid = [
     { field: 'name', headerText: 'District', width: '150', textAlign: 'Center' },
-    { headerText: 'Action', width: '100', textAlign: 'Center', template: EditDistrictTemp }
+    // { headerText: 'Action', width: '100', textAlign: 'Center', template: EditDistrictTemp }
   ];
 
   const handleDelete = async () => {

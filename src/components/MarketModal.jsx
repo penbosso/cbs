@@ -3,7 +3,6 @@ import { Button, Form, Select, Input, message } from 'antd';
 import { MdOutlineCancel } from 'react-icons/md';
 import { useStateContext } from '../contexts/ContextProvider';
 import { useAddMarketMutation, useGetMarketByMarketIdQuery, useUpdateMarketMutation } from '../services/marketService';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
 import Loading from './Loading';
 import { useGetDistrictsQuery } from '../services/districtService';
 
@@ -15,22 +14,18 @@ const layout = {
         span: 16,
     },
 };
-const MarketModal = ({ marketId }) => {
+const MarketModal = ({ market }) => {
     const { Option } = Select;
-    const { setIsClicked, initialState, editMarket, } = useStateContext();
+    const { setIsClicked, initialState } = useStateContext();
     const [addMarket, { isLoading: addLoading }, error] = useAddMarketMutation();
     const [updateMarket, { isLoading: editLoading }] = useUpdateMarketMutation();
     const [form] = Form.useForm();
-    const { data: market } = useGetMarketByMarketIdQuery(marketId ? marketId : skipToken);
 
     const { data} = useGetDistrictsQuery();
     const districts = data?.locations
 
-    console.log(market, marketId)
-
     const handleOk = async (values) => {
-        console.log(editMarket?.id) // 8971MR
-        if (marketId) {
+        if (market?.id) {
             console.log("updating...")
             try {
                 const result = await updateMarket({ id: market.id, values });
@@ -39,8 +34,8 @@ const MarketModal = ({ marketId }) => {
                     result.error?.code ? message.error(result.error.code) : message.error(result.error.message)
                 } else {
                     message.success("Market updated")
-                    form.resetFields();
                 }
+                setIsClicked(initialState)
             } catch (e) {
                 message.error(e);
             }
@@ -48,7 +43,7 @@ const MarketModal = ({ marketId }) => {
         } else {
             console.log("adding...")
             try {
-                const result = await addMarket({ ...values, id: editMarket?.id });
+                const result = await addMarket({ ...values, id: market?.id });
                 console.log(result);
                 if (result.error) {
                     result.error?.code ? message.error(result.error.code) : message.error(result.error.message)
@@ -69,9 +64,9 @@ const MarketModal = ({ marketId }) => {
     return (
         <div className=" flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                {(!marketId || market) ? <div className="border-2 border-color rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {(!market?.id || market) ? <div className="border-2 border-color rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                     <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                        <h3 className="text-3xl font=semibold">{marketId ? `Editing "${market?.name}"` : 'Add new market'}</h3>
+                        <h3 className="text-3xl font=semibold">{market?.id ? `Editing "${market?.name}"` : 'Add new market'}</h3>
                         <button
                             style={{ backgroundColor: 'light - gray', color: 'rgb(153, 171, 180)', borderRadius: "50%" }}
                             className="text-2xl p-3 hover:drop-shadow-xl hover:bg-light-gray"

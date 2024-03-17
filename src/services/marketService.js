@@ -40,18 +40,15 @@ export const marketService = apiSlice.injectEndpoints({
         }),
         updateMarket: builder.mutation({
             query: initialMarket => ({
-                url: `/market/${initialMarket.id}`,
+                url: `/market/market-update/${initialMarket.id}/`,
                 method: 'PUT',
-                body: {
-                    ...initialMarket,
-                    date: new Date().toISOString()
-                }
+                body: initialMarket.values
             }),
             invalidatesTags: ['Market']
         }),
         deleteMarket: builder.mutation({
             query: ({ id }) => ({
-                url: `/market/${id}`,
+                url: `/market/delete-update/${id}/`,
                 method: 'DELETE',
                 body: { id }
             }),

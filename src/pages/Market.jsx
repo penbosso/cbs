@@ -11,12 +11,13 @@ import { useGetMarketsQuery } from '../services/marketService';
 const Market = () => {
   const toolbarOptions = ['Search'];
   const { currentColor, handleClickWithCatId, handleClick, isClicked } = useStateContext();
-  const { data} = useGetMarketsQuery();
+  const { data } = useGetMarketsQuery();
 
   const markets = data?.markets
-  const deleteMarket = ()=>{};
-  const [deleteCat, setDeleteCat] = useState(null);
+  const deleteMarket = () => { };
+  const [deleteMart, setDeleteMart] = useState(null);
   const [processed, setProccessed] = useState(false);
+  const [editMart, setEditMart] = useState('')
 
   const EditMarketTemp = (props) => {
     return (
@@ -24,14 +25,17 @@ const Market = () => {
         <TooltipComponent
           content="Edit"
         >
-          <button type='button' className="text-xl" onClick={() => handleClickWithCatId(props.id)}> <AiFillEdit /> </button>
+          <button type='button' className="text-xl" onClick={() => {
+            handleClick('marketModal')
+            setEditMart(props)
+          }}> <AiFillEdit /> </button>
         </TooltipComponent>
 
-        <TooltipComponent
+        {/* <TooltipComponent
           content="Delete"
         >
-          <button type='button' className="text-xl" onClick={() => setDeleteCat(props)}> <AiTwotoneDelete color='red' /> </button>
-        </TooltipComponent>
+          <button type='button' className="text-xl" onClick={() => setDeleteMart(props)}> <AiTwotoneDelete color='red' /> </button>
+        </TooltipComponent> */}
       </Space>
     )
   };
@@ -42,14 +46,14 @@ const Market = () => {
   ];
 
   const handleDelete = async () => {
-    const result = await deleteMarket(deleteCat.id)
-    if (result?.data == 'ok'){
+    const result = await deleteMarket(deleteMart.id)
+    if (result?.data == 'ok') {
       message.success("Market deleted")
-      setDeleteCat(null)
+      setDeleteMart(null)
     }
     else
       message.success("Market not deleted")
-      setDeleteCat(null)
+    setDeleteMart(null)
   }
 
   return (
@@ -64,17 +68,17 @@ const Market = () => {
         > <MdOutlineCategory /> <span className="ml-1"> Add New </span></button>
       </div>
 
-      {isClicked.marketModal && (<MarketModal marketId={isClicked.marketId} />)}
-      {deleteCat && (
+      {isClicked.marketModal && (<MarketModal market={editMart} />)}
+      {deleteMart && (
         <div className=" flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">
             <div className="border-2 border-color rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
               <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
-                <h3 className="text-3xl font=semibold">Delete '{deleteCat.name}' Market</h3>
+                <h3 className="text-3xl font=semibold">Delete '{deleteMart.name}' Market</h3>
                 <button
                   style={{ backgroundColor: 'light - gray', color: 'rgb(153, 171, 180)', borderRadius: "50%" }}
                   className="text-2xl p-3 hover:drop-shadow-xl hover:bg-light-gray"
-                  onClick={() => setDeleteCat(null)}
+                  onClick={() => setDeleteMart(null)}
                 >
                   <MdOutlineCancel />
                 </button>
@@ -83,12 +87,12 @@ const Market = () => {
               <div className="shadow overflow-hidden sm:rounded-md">
                 <div className="px-4 py-5 bg-white sm:p-6">
 
-                  <h3>Are you sure you want to delete {deleteCat.name}</h3>
+                  <h3>Are you sure you want to delete {deleteMart.name}</h3>
                   <Space align="center" block="true">
                     <Button type="primary" danger htmlType="button" onClick={handleDelete}>
                       Delete
                     </Button>
-                    <Button htmlType="button" onClick={() => setDeleteCat(null)}>
+                    <Button htmlType="button" onClick={() => setDeleteMart(null)}>
                       Cancel
                     </Button>
                   </Space>

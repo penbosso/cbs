@@ -35,12 +35,17 @@ export const userService = apiSlice.injectEndpoints({
         }),
         updateUser: builder.mutation({
             query: initialUser => ({
-                url: `/users/${initialUser.id}`,
-                method: 'PUT',
-                body: {
-                    ...initialUser,
-                    date: new Date().toISOString()
-                }
+                url: `/auth/update-user/${initialUser.id}/`,
+                method: 'POST',
+                body: initialUser.data
+            }),
+            invalidatesTags: ['User']
+        }),
+        updateUserApproval: builder.mutation({
+            query: initialUser => ({
+                url: `/auth/approve-user/${initialUser.id}/`,
+                method: 'POST',
+                body: initialUser.data
             }),
             invalidatesTags: ['User']
         }),
@@ -61,6 +66,7 @@ export const {
     useGetUserByUserIdQuery,
     useAddUserMutation,
     useUpdateUserMutation,
+    useUpdateUserApprovalMutation,
     useDeleteUserMutation
 } = userService;
 

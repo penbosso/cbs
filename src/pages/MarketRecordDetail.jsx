@@ -50,8 +50,7 @@ const MarketRecordDetail = () => {
             const result = action == 'forward' ?
                 await updateMarketRecordProgress({ id: marketRecord?.id, data: { action: act, comment: comment, viewers: selectedViewerIds } })
                 : await updateMarketRecordProgress({ id: marketRecord?.id, data: { action: act, comment: comment } });
-
-            console.log(result, 'vvvvvvvvv');
+                
             if (result?.error) {
                 message.error(result.error.data.error)
             } else {

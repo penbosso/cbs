@@ -18,6 +18,10 @@ export const marketrecordService = apiSlice.injectEndpoints({
                     return '/market/all-report-list/'
                 } else if (user?.role.toLowerCase() == 'creator') {
                     return '/market/user-report-list/'
+                } else if (user?.role.toLowerCase() == 'minister') {
+                    return '/market/minister-report-list/'
+                } else if (user?.role.toLowerCase() == 'viewer') {
+                    return '/market/viewers-report-list/'
                 } else {
                     return '/market/location-report-list'
                 }

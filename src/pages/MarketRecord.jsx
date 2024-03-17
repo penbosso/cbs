@@ -17,7 +17,7 @@ const MarketRecord = () => {
   const { currentColor, handleClickWithCatId, handleClick, isClicked, setMarketRecord, marketRecord } = useStateContext();
   const currentUser = useSelector(selectCurrentUser)
 
-  const [proccessed, setProcessed] = useState(false);
+  const [proccessed, setProcessed] = useState(true);
   const navigate = useNavigate()
   const occupanyRateTemp = (props) => {
     return <span>1</span>
@@ -105,7 +105,7 @@ const MarketRecord = () => {
     } else if (currentUser.role === 'creator') {
       return record.status === 'rollback';
     } else {
-      return record.status === 'completed';
+      return record.status === 'completed'|| record.status === 'processing'|| record.status === 'forwarded';
     }
   });
   const editing = { allowDeleting: true, allowEditing: true };
