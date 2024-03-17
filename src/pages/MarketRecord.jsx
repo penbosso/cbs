@@ -95,6 +95,19 @@ const MarketRecord = () => {
   const { data } = useGetUserMarketRecordsQuery(currentUser);
   console.log(data);
   const marketrecord = data?.reports
+  const filteredMarketRecords = marketrecord?.filter(record => {
+    if (currentUser.role === 'verifier') {
+      return (record.status === 'pending' || record.status === 'rollback_to_be_signed');
+    } else if (currentUser.role === 'approver') {
+      return record.status === 'verified';
+    } else if (currentUser.role === 'header') {
+      return record.status === 'approved';
+    } else if (currentUser.role === 'creator') {
+      return record.status === 'rollback';
+    } else {
+      return record.status === 'completed';
+    }
+  });
   const editing = { allowDeleting: true, allowEditing: true };
   const contextMenuItems = [
     'AutoFit',
@@ -120,24 +133,28 @@ const MarketRecord = () => {
       <div className='flex justify-between items-center' >
         <Header category="Page" title="Market Record" />
         <div className='flex'>
-          <button
-            onClick={() => { setProcessed(!proccessed) }}
-            type="button"
-            style={{ backgroundColor: proccessed ? 'orange' : 'green' }}
-            className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2 mr-4"
-          > <VscServerProcess /> <span className=""> {proccessed ? 'To be processed' : 'All reports'} </span></button>
-          <button
-            onClick={() => { navigate('/market-record-detail') }}
+          {((currentUser.role == 'creator') || (currentUser.role == 'verifier') || (currentUser.role == 'approver') || (currentUser.role == 'header'))
+            && (<button
+              onClick={() => { setProcessed(!proccessed) }}
+              type="button"
+              style={{ backgroundColor: proccessed ? 'orange' : 'green' }}
+              className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2 mr-4"
+            > <VscServerProcess /> <span className="ml-1"> {proccessed ? 'View Reports to be processed' : 'View all reports'} </span></button>)}
+          {currentUser.role == 'creator' && (<button
+            onClick={() => {
+              setMarketRecord({ market: '', records: [] })
+              navigate('/market-record-detail')
+            }}
             type="button"
             style={{ backgroundColor: currentColor }}
             className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2"
-          > <MdAddShoppingCart /> <span className="ml-1"> Add New </span></button>
+          > <MdAddShoppingCart /> <span className="ml-1"> Add New </span></button>)}
         </div>
       </div>
-      
+
       <GridComponent
         id="gridcomp"
-        dataSource={marketrecord}
+        dataSource={!proccessed ? filteredMarketRecords : marketrecord}
         allowPaging
         pageSettings={{ pageSize: 10 }}
         toolbar={toolbarOptions}

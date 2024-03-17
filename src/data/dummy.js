@@ -434,27 +434,27 @@ export const links = [
     title: '',
     links: [
       {
-        allowedRoles: [  'creator' , 'approver' , 'verifier', 'admin'],
+        allowedRoles: [ 'minister', 'admin'],
         name: 'dashboard',
         icon: <FiShoppingBag />,
       },
       {
-        allowedRoles: [  'creator' , 'approver' , 'verifier', 'admin'],
+        allowedRoles: [  'creator' , 'approver' , 'verifier', 'minister', 'viewer', 'header','admin'],
         name: 'market-record',
         icon: <AiOutlineShoppingCart />,
       },
       {
-        allowedRoles: [  'creator' , 'approver' , 'verifier', 'admin'],
+        allowedRoles: [ 'admin'],
         name: 'market',
         icon: <SiMarketo />,
       },
       {
-        allowedRoles: [  'creator' , 'approver' , 'verifier', 'admin'],
+        allowedRoles: [  'admin'],
         name: 'district',
         icon: <MdOutlineCategory />,
       },
       {
-        allowedRoles: [10, 103,   'creator' , 'approver' , 'verifier', 'admin'],
+        allowedRoles: ['admin'],
         name: 'user',
         icon: <RiContactsLine />,
       },

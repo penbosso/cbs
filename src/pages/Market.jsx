@@ -43,12 +43,13 @@ const Market = () => {
 
   const handleDelete = async () => {
     const result = await deleteMarket(deleteCat.id)
-    if (result.data == 'ok'){
+    if (result?.data == 'ok'){
       message.success("Market deleted")
       setDeleteCat(null)
     }
     else
       message.success("Market not deleted")
+      setDeleteCat(null)
   }
 
   return (

@@ -17,7 +17,7 @@ export const marketService = apiSlice.injectEndpoints({
             providesTags: ['Market']
         }),
         getMarketByMarketId: builder.query({
-            query: id => `/markets/${id}`,
+            query: id => `/market/${id}`,
             transformResponse: responseData => {
                 const loadedMarkets = responseData.map(market => {
                     return market;
@@ -28,7 +28,7 @@ export const marketService = apiSlice.injectEndpoints({
         }),
         addMarket: builder.mutation({
             query: initialMarket => ({
-                url: '/markets/market-create/',
+                url: '/market/market-create/',
                 method: 'POST',
                 body: {
                     ...initialMarket,
@@ -40,7 +40,7 @@ export const marketService = apiSlice.injectEndpoints({
         }),
         updateMarket: builder.mutation({
             query: initialMarket => ({
-                url: `/markets/${initialMarket.id}`,
+                url: `/market/${initialMarket.id}`,
                 method: 'PUT',
                 body: {
                     ...initialMarket,
@@ -51,7 +51,7 @@ export const marketService = apiSlice.injectEndpoints({
         }),
         deleteMarket: builder.mutation({
             query: ({ id }) => ({
-                url: `/markets/${id}`,
+                url: `/market/${id}`,
                 method: 'DELETE',
                 body: { id }
             }),

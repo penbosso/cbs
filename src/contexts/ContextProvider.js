@@ -23,7 +23,7 @@ export const ContextProvider = ({ children }) => {
   const [themeSettings, setThemeSettings] = useState(false);
   const [activeMenu, setActiveMenu] = useState(true);
   const [isClicked, setIsClicked] = useState(initialState);
-  const [editmarketrecord, setEditMarketRecord] = useState(false);
+  const [editMarketRecord, setEditMarketRecord] = useState(false);
   const [authUser, setAuthUser] = useState();
   const [editMarket, setEditMarket] = useState();
   const [marketRecord, setMarketRecord] = useState({ market: '', records: [] });
@@ -50,7 +50,7 @@ export const ContextProvider = ({ children }) => {
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
     <StateContext.Provider value={{
-      editmarketrecord, setEditMarketRecord, authUser, currentColor, currentMode, activeMenu, screenSize,
+      editMarketRecord, setEditMarketRecord, authUser, currentColor, currentMode, activeMenu, screenSize,
       setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, 
       setCurrentColor, setCurrentMode, handleClickWithCatId, handleClickWithItemId, editMarket, setEditMarket,
       setMode, setColor, themeSettings, setThemeSettings, marketRecord, setMarketRecord

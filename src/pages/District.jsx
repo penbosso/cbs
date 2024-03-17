@@ -53,15 +53,15 @@ const District = () => {
     <div className="m-2 md:m-2 mt-2 p-2 md:p-4 bg-white rounded-3xl dark:bg-secondary-dark-bg">
       <div className="flex justify-between items-center">
         <Header district="Page" title="Districts" />
-        <button
+        {/* <button
           onClick={() => { handleClick('districtModal') }}
           type="button"
           style={{ backgroundColor: currentColor }}
           className="flex justify-between items-center text-sm opacity-0.9  text-white  hover:drop-shadow-xl rounded-xl p-2"
-        > <MdOutlineCategory /> <span className="ml-1"> Add New </span></button>
+        > <MdOutlineCategory /> <span className="ml-1"> Add New </span></button> */}
       </div>
 
-      {isClicked.districtModal && (<DistrictModal districtId={isClicked.districtId} />)}
+      {/* {isClicked.districtModal && (<DistrictModal districtId={isClicked.districtId} />)} */}
       {deleteCat && (
         <div className=" flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl">
