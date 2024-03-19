@@ -50,7 +50,7 @@ const MarketRecordDetail = () => {
             const result = action == 'forward' ?
                 await updateMarketRecordProgress({ id: marketRecord?.id, data: { action: act, comment: comment, viewers: selectedViewerIds } })
                 : await updateMarketRecordProgress({ id: marketRecord?.id, data: { action: act, comment: comment } });
-                
+
             if (result?.error) {
                 message.error(result.error.data.error)
             } else {
@@ -64,8 +64,9 @@ const MarketRecordDetail = () => {
             message.error(JSON.stringify(e));
         }
     }
-
-
+    const dateObj = new Date();
+    const yearStr = `${dateObj.getFullYear()}/${dateObj.getFullYear() + 1}`;
+    const quaterList = [`Quater 1 ${yearStr}`, `Quater 2 ${yearStr}`, `Quater 3 ${yearStr}`, `Quater 4 ${yearStr}`]
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -94,8 +95,8 @@ const MarketRecordDetail = () => {
             message.error("Provide data for components, number of places available and rented")
             return;
         }
-        if (marketRecord?.market.trim() === '') {
-            message.error("Make sure to selet a market")
+        if (marketRecord?.market.trim() === '' || marketRecord?.season?.trim() === '') {
+            message.error("Make sure to selet a market and season")
             return;
         }
 
@@ -171,6 +172,11 @@ const MarketRecordDetail = () => {
     const { data: marketRecordList } = useGetUserLocationMarketsQuery();
     const markets = marketRecordList?.markets;
 
+
+    const totalPlacesAvailable = Math.round(marketRecord?.records.reduce((total, record) => total + record.total_number_places_available, 0) * 10) / 10;
+    const totalPlacesRented = Math.round(marketRecord?.records.reduce((total, record) => total + record.number_places_rented, 0) * 10) / 10;
+    const totalOccupancyRate = Math.round(totalPlacesRented * 100 / totalPlacesAvailable * 10) / 10;
+
     return (
         <div className="m-2 md:m-2 mt-2 p-2 md:p-4 bg-white rounded-3xl dark:bg-secondary-dark-bg">
             <div className='flex justify-between items-center' >
@@ -196,7 +202,7 @@ const MarketRecordDetail = () => {
                                 <p>
                                     <span className='font-bold p-2'>Verified By:</span>
                                     {`${marketRecord?.verified_by?.firstname} ${marketRecord?.verified_by?.lastname}, ${marketRecord?.verified_by?.position}`}
-                                    <span className='text-xs text-blue-400'> ({marketRecord?.verified_by?.email})</span>
+                                    {marketRecord?.verified_at && <span className='text-xs text-blue-400'> ({marketRecord?.verified_at})</span>}
                                 </p>
                             ) : (
                                 <p>
@@ -207,7 +213,7 @@ const MarketRecordDetail = () => {
                                 <p>
                                     <span className='font-bold p-2'>Approved By:</span>
                                     {`${marketRecord?.approved_by?.firstname} ${marketRecord?.approved_by?.lastname}, ${marketRecord?.approved_by?.position}`}
-                                    <span className='text-xs text-blue-400'> ({marketRecord?.approved_by?.email})</span>
+                                    {marketRecord?.approved_at && <span className='text-xs text-blue-400'> ({marketRecord?.approved_at})</span>}
                                 </p>
                             ) : (
                                 <p>
@@ -218,44 +224,49 @@ const MarketRecordDetail = () => {
                                 <p>
                                     <span className='font-bold p-2'>Forwarded By:</span>
                                     {`${marketRecord?.forwarded_by?.firstname} ${marketRecord?.forwarded_by?.lastname}, ${marketRecord?.forwarded_by?.position}`}
-                                    <span className='text-xs text-blue-400'> ({marketRecord?.forwarded_by?.email})</span>
+                                    {marketRecord?.forwarded_at && <span className='text-xs text-blue-400'> ({marketRecord?.forwarded_at})</span>}
                                 </p>
                             ) : (
                                 <p>
-                                    <span className='font-bold p-2'>Forwarded By:</span> PENDING
+                                    <span className='font-bold p-2'>Submitted By:</span> PENDING
                                 </p>
                             )}
                         </div>
 
                     </div>
                     <h2 className="text-xl font-bold mb-2">Records:</h2>
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                        {marketRecord?.records?.map((record, index) => (
-                            <div key={index} className="bg-gray-100 p-6 rounded-lg shadow-md">
-                                <h3 className="text-xl font-semibold mb-2">{record.component_name}</h3>
-                                <p className="text-gray-600 mb-2">{record.component_description}</p>
-                                <div className="flex flex-wrap mb-2">
-                                    <div className="w-1/2">
-                                        <p className="text-sm text-gray-500">Total Places Available:</p>
-                                        <p className="text-lg font-semibold">{record.total_number_places_available}</p>
-                                    </div>
-                                    <div className="w-1/2">
-                                        <p className="text-sm text-gray-500">Places Rented:</p>
-                                        <p className="text-lg font-semibold">{record.number_places_rented}</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-wrap mb-2">
-                                    <div className="w-1/2">
-                                        <p className="text-sm text-gray-500">Occupancy Rate:</p>
-                                        <p className="text-lg font-semibold">{Math.ceil(record.occupancy_rate * 10) / 10}%</p>
-                                    </div>
-                                    <div className="w-1/2">
-                                        <p className="text-sm text-gray-500">Observation:</p>
-                                        <p className="text-lg font-semibold">{record.observation}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="max-w-screen-xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <table className="w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Component Name</th>
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Total Places Available</th>
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Places Rented</th>
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Occupancy Rate (%)</th>
+                                    <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Observation</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {marketRecord?.records?.map((record, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4 whitespace-no-wrap">{record.component_name}</td>
+                                        <td className="px-6 py-4 whitespace-no-wrap">{Math.round(record.total_number_places_available * 10) / 10}</td>
+                                        <td className="px-6 py-4 whitespace-no-wrap">{Math.round(record.number_places_rented * 10) / 10}</td>
+                                        <td className="px-6 py-4 whitespace-no-wrap">{Math.round(record.occupancy_rate * 10) / 10}</td>
+                                        <td className="px-6 py-4 whitespace-no-wrap">{record.observation}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td className="px-6 py-4 font-bold">Total</td>
+                                    <td className="px-6 py-4 font-bold">{totalPlacesAvailable}</td>
+                                    <td className="px-6 py-4 font-bold">{totalPlacesRented}</td>
+                                    <td className="px-6 py-4 font-bold">{totalOccupancyRate}</td>
+                                    <td className="px-6 py-4"></td> {/* Empty cell for the 'Observation' column */}
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                     {action && (
                         <div className=" flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -493,16 +504,31 @@ const MarketRecordDetail = () => {
                 :
                 <div className='container mx-auto px-4 py-8'>
                     <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <label htmlFor="market" className="block text-gray-700 font-bold mb-2">Market</label>
+                        <div className="mb-4 flex">
+                            <div>
+
+                                <label htmlFor="market" className="block text-gray-700 font-bold mb-2">Market</label>
 
 
-                            <select id="market" name="market" value={marketRecord?.market} onChange={handleChange}
-                                className="appearance-none border rounded py-2 px-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            >
-                                <option value="" >Select market</option>
-                                {markets?.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
-                            </select>
+                                <select id="market" name="market" value={marketRecord?.market} onChange={handleChange}
+                                    className="appearance-none border rounded py-2 px-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                >
+                                    <option value="" >Select market</option>
+                                    {markets?.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+                                </select>
+                            </div>
+                            <div className='ml-8'>
+
+                                <label htmlFor="season" className="block text-gray-700 font-bold mb-2">Season</label>
+
+
+                                <select id="season" name="season" value={marketRecord?.season} onChange={handleChange}
+                                    className="appearance-none border rounded py-2 px-8 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                >
+                                    <option value="" >Select season</option>
+                                    {quaterList?.map((quater, index) => <option key={index} value={quater}>{quater}</option>)}
+                                </select>
+                            </div>
                         </div>
                         {marketRecord.records.map((record, index) => (
                             <div key={index} className="flex flex-wrap items-center mb-4 px-4  py-1 border border-gray-300 justify-between rounded">

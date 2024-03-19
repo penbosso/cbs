@@ -105,7 +105,7 @@ const MarketRecord = () => {
     } else if (currentUser.role === 'creator') {
       return record.status === 'rollback';
     } else {
-      return record.status === 'completed'|| record.status === 'processing'|| record.status === 'forwarded';
+      return record.status === 'completed' || record.status === 'processing' || record.status === 'submitted';
     }
   });
   const editing = { allowDeleting: true, allowEditing: true };
@@ -142,7 +142,7 @@ const MarketRecord = () => {
             > <VscServerProcess /> <span className="ml-1"> {proccessed ? 'View Reports to be processed' : 'View all reports'} </span></button>)}
           {currentUser.role == 'creator' && (<button
             onClick={() => {
-              setMarketRecord({ market: '', records: [] })
+              setMarketRecord({ market: '', season: '', records: [] })
               navigate('/market-record-detail')
             }}
             type="button"
