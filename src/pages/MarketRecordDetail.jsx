@@ -165,11 +165,15 @@ const MarketRecordDetail = () => {
             }
         } else {
             console.log(marketRecord);
+            const currentDate = new Date()
+            const year = currentDate.getFullYear()
             try {
-                const result = await addMarketRecord(marketRecord);
+                const result = await addMarketRecord({ ...marketRecord, year });
                 console.log(result);
                 if (result.error) {
                     message.error(result.error.data.message)
+                    if (result.error?.data?.errors?.non_field_errors)
+                        message.error("You can not report twice in the same season")
                     setMarketRecord(marketRecord)
                 } else {
                     message.success(result.data.message)

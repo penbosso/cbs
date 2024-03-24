@@ -27,7 +27,7 @@ export const ContextProvider = ({ children }) => {
   const [editMarketRecord, setEditMarketRecord] = useState(false);
   const [authUser, setAuthUser] = useState();
   const [editMarket, setEditMarket] = useState();
-  const [marketRecord, setMarketRecord] = useState({ market: '', season: '', records: [] });
+  const [marketRecord, setMarketRecord] = useState({ market: '', season: '', year: '',records: [] });
 
   useEffect(() => {
     const unsubscribe = () =>{}
