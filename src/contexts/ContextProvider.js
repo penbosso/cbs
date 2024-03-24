@@ -11,6 +11,7 @@ const initialState = {
   notification: false,
   categoryModal: false,
   marketModal: false,
+  ComponentModal: false,
   marketRecordModal: false,
   categoryId: null,
   menuItemId: null,

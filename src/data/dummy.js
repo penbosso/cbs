@@ -454,6 +454,11 @@ export const links = [
         icon: <MdOutlineCategory />,
       },
       {
+        allowedRoles: [  'admin'],
+        name: 'component',
+        icon: <MdOutlineAdminPanelSettings />,
+      },
+      {
         allowedRoles: ['admin'],
         name: 'user',
         icon: <RiContactsLine />,

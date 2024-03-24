@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 // import { useGetUserByUserIdQuery } from './services/userService';
 import { Navbar, Sidebar } from './components';
-import { Dashboard, AdminDashboard, MarketRecord,MarketRecordDetail, Users, District, Market, Missing } from './pages';
+import { Dashboard, AdminDashboard, MarketRecord,MarketRecordDetail, Users, District, Component, Market, Missing } from './pages';
 import './App.css';
 
 import { useStateContext } from './contexts/ContextProvider';
@@ -50,6 +50,7 @@ const App = () => {
                 <Route path="/admin-dashboard" element={(<AdminDashboard />)} />
                 <Route path="/user" element={<Users />} />
                 <Route path="/market" element={<Market />} />
+                <Route path="/component" element={<Component />} />
                 <Route path="/district" element={<District />} />
                 <Route path="/market-record" element={<MarketRecord />} />
                 <Route path="/market-record-detail" element={<MarketRecordDetail />} />

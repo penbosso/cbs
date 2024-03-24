@@ -2,6 +2,7 @@ export { default as Dashboard } from './Dashboard';
 export { default as AdminDashboard } from './AdminDashboard';
 export { default as MarketRecord } from './MarketRecord';
 export { default as Market } from './Market';
+export { default as Component } from './Component';
 export { default as District } from './District';
 export { default as Users } from './User';
 export { default as Missing } from './Missing';

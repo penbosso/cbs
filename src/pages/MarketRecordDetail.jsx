@@ -11,12 +11,17 @@ import { useGetViewersQuery } from '../services/userService';
 import { useGetUserLocationMarketsQuery } from '../services/marketService'
 import { formatDate } from '../util/helper'
 import { useNavigate } from 'react-router-dom'
+import { useGetComponentsQuery } from '../services/componentService'
 
 const MarketRecordDetail = () => {
     const currentUser = useSelector(selectCurrentUser)
     const { marketRecord, setMarketRecord, editMarketRecord, setEditMarketRecord } = useStateContext()
     const navigate = useNavigate()
     const { data: comments, isLoading: commentLoading } = useGetMarketRecordCommentsByMarketRecordIdQuery(marketRecord?.id ? marketRecord?.id : skipToken)
+
+
+    const { data: componentData } = useGetComponentsQuery();
+    const components = componentData?.components.filter(component => component.market == marketRecord.market)
 
     const [updateMarketRecordProgress, { isLoading: updateLoading }, error] = useUpdateMarketRecordProgressMutation();
 
@@ -78,6 +83,19 @@ const MarketRecordDetail = () => {
             const updatedRecords = marketRecord.records.map((record, i) => {
                 if (i === index) {
                     return { ...record, [field]: value };
+                }
+                return record;
+            });
+            setMarketRecord({ ...marketRecord, records: updatedRecords });
+        } catch (e) {
+            console.log(e, 'caught')
+        }
+    };
+    const handle2RecordChange = (index, field, value, field2, value2) => {
+        try {
+            const updatedRecords = marketRecord.records.map((record, i) => {
+                if (i === index) {
+                    return { ...record, [field]: value, [field2]: value2 };
                 }
                 return record;
             });
@@ -536,14 +554,15 @@ const MarketRecordDetail = () => {
 
                                 <div>
                                     <label htmlFor={`component_name_${index}`} className="block text-gray-700 text-xs font-bold mr-2">Component Name</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="component_name"
                                         value={record.component_name}
-                                        onChange={(e) => handleRecordChange(index, 'component_name', e.target.value)}
-                                        placeholder="Component Name"
-                                        className="mr-2 mb-2 appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    />
+                                        onChange={(e) => { handle2RecordChange(index, 'component_name', e.target.value, 'total_number_places_available', components[index].total_number_places_available) }}
+                                        className="mr-2 mb-2  border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    >
+                                        <option value="">Select</option>
+                                        {components.map(component => <option key={component.id} value={component.name} >{component.name}</option>)}
+                                    </select>
                                 </div>
                                 <div className="items-center mb-2">
                                     <label htmlFor={`total_number_places_available_${index}`} className="block text-gray-700 font-bold text-xs mr-2">Total Number of Places Available</label>
@@ -551,6 +570,7 @@ const MarketRecordDetail = () => {
                                         type="number"
                                         id={`total_number_places_available_${index}`}
                                         name="total_number_places_available"
+                                        readOnly
                                         value={record.total_number_places_available}
                                         onChange={(e) => {
                                             const value = e.target.value;

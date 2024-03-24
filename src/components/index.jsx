@@ -8,6 +8,7 @@ export { default as UserProfile } from './UserProfile';
 export { default as Header } from './Header';
 export { default as Loading } from './Loading';
 export { default as MarketModal } from './MarketModal';
+export { default as ComponentModal } from './ComponentModal';
 export { default as DistrictModal } from './DistrictModal';
 export { default as MarketRecordModal } from './MarketRecordModal';
 export { default as ProtectedRoute } from './ProtectedRoute';
