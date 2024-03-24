@@ -557,7 +557,12 @@ const MarketRecordDetail = () => {
                                     <select
                                         name="component_name"
                                         value={record.component_name}
-                                        onChange={(e) => { handle2RecordChange(index, 'component_name', e.target.value, 'total_number_places_available', e.target.selectedOptions[0].getAttribute('data-available')) }}
+                                        onChange={(e) => {
+                                            if (marketRecord.records.some(record => record.component_name === e.target.value))
+                                                message.error("component already added")
+                                            else
+                                                handle2RecordChange(index, 'component_name', e.target.value, 'total_number_places_available', e.target.selectedOptions[0].getAttribute('data-available'))
+                                        }}
                                         className="mr-2 mb-2  border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     >
                                         <option value="" data-available="">Select</option>
