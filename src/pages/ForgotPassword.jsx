@@ -41,7 +41,7 @@ export default function ForgotPassword() {
 
 
             <h3 style={{ color: tbg_600 }} className={`text-4xl font-bold`}>
-              Cross Border Market
+              Occupancy Rate Cross Bordeer Market
             </h3>
         </a>
         </div>

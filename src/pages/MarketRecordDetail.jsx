@@ -164,6 +164,10 @@ const MarketRecordDetail = () => {
                 message.error(e);
             }
         } else {
+            if (marketRecord.records.length < components.length) {
+                message.error("You have to provived report for all components")
+                return;
+            }
             console.log(marketRecord);
             const currentDate = new Date()
             const year = currentDate.getFullYear()

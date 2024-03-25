@@ -33,24 +33,21 @@ export default function Signin() {
     <div className="flex relative dark:bg-main-dark-bg">
 
       <div className="flex flex-col items-center w-full min-h-screen pt-6 sm:justify-center sm:pt-0 bg-opacity-80 bg-gray-50" >
-        <div>
-          <a href="/">
-              {(loginLoading) && <Loading />}
-              <div className='flex mb-4'>
-                <img className='rounded h-40' src='/logo.png' />
-                <div className='ml-4 mt-16'>
-                  <h3 className={`text-4xl font-bold`}>
-                    MINICOM
-                  </h3>
-                </div>
-              </div>
-
-
-              <h3 style={{ color: tbg_600 }} className={`text-4xl font-bold`}>
-                Cross Border Market
+        
+          {(loginLoading) && <Loading />}
+          <div className='flex mb-4'>
+            <img className='rounded h-40' src='/logo.png' />
+            <div className='ml-4 mt-16'>
+              <h3 className={`text-4xl font-bold`}>
+                MINICOM
               </h3>
-          </a>
-        </div>
+            </div>
+          </div>
+
+
+          <h3 style={{ color: tbg_600 }} className={`text-4xl font-bold`}>
+            Occupancy Rate Cross Bordeer Market
+          </h3>
         <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-gray-100  dark:bg-main-dark-bg shadow-md sm:max-w-lg sm:rounded-lg">
           <form onSubmit={handleSubmit}>
             <div className="mt-4">

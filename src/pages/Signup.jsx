@@ -78,7 +78,7 @@ console.log(districts)
 
 
         <h3 style={{ color: tbg_600 }} className={`text-4xl font-bold`}>
-          Cross Border Market
+          Occupancy Rate Cross Bordeer Market
         </h3>
         <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-white  dark:bg-main-dark-bg shadow-md sm:max-w-lg sm:rounded-lg">
 
