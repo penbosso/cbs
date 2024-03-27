@@ -497,7 +497,7 @@ const MarketRecordDetail = () => {
                     <h2 className="font-bold mt-4">Comments</h2>
                     {commentLoading && <Loading />}
                     {!commentLoading && <div className="flex flex-wrap mb-2">
-                        {(comments?.length > 0 && currentUser.role?.toLowerCase() !== 'minister')? (
+                        {(comments?.length > 0 && currentUser.role?.toLowerCase() !== 'minister') ? (
                             comments.map((comment, index) => (
                                 <div key={index} className="w-full sm:w-1 md:w-1/2 lg:w-1/3 mb-4 p-4">
                                     <div className="bg-gray-100 rounded-md p-4 text-sm ">
@@ -510,21 +510,21 @@ const MarketRecordDetail = () => {
                                     </div>
                                 </div>
                             ))
-                        ) : (comments?.length > 0 && currentUser.role?.toLowerCase() == 'minister') ? (
-                            comments.filter(comment => comment.commented_by?.position === "mayor").map((comment, index) => (
-                                <div key={index} className="w-full sm:w-1 md:w-1 lg:w-1/2 mb-4 p-4">
-                                    <div className="bg-gray-100 rounded-md p-4 text-sm ">
-                                        <p className="text-gray-700 mb-2">
-                                            <span className="font-bold">Commented By:</span>{' '}
-                                            {`${comment.commented_by?.firstname} ${comment.commented_by?.lastname}, ${comment.commented_by?.position}`}
-                                        </p>
-                                        <p className="text-gray-700 mb-2"><span className="font-bold">Comment:</span> {comment.comment}</p>
-                                        <p className="text-gray-700"><span className="font-bold">Created At:</span> {formatDate(comment.created_at)}</p>
-                                    </div>
-                                </div>
-                            ))
                         ) : (
-                            <p className='text-sm'>No comments</p>
+                            comments.filter(comment => comment.commented_by?.position?.toLowerCase() === "mayor").map((comment, index) => comment).length < 1 ? <p className='text-sm'>No comments</p> : (
+                                comments.filter(comment => comment.commented_by?.position?.toLowerCase() === "mayor").map((comment, index) => (
+                                    <div key={index} className="w-full sm:w-1 md:w-1 lg:w-1/2 mb-4 p-4">
+                                        <div className="bg-gray-100 rounded-md p-4 text-sm ">
+                                            <p className="text-gray-700 mb-2">
+                                                <span className="font-bold">Commented By:</span>{' '}
+                                                {`${comment.commented_by?.firstname} ${comment.commented_by?.lastname}, ${comment.commented_by?.position}`}
+                                            </p>
+                                            <p className="text-gray-700 mb-2"><span className="font-bold">Comment:</span> {comment.comment}</p>
+                                            <p className="text-gray-700"><span className="font-bold">Created At:</span> {formatDate(comment.created_at)}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            )
                         )}
                     </div>
                     }

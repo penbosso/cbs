@@ -42,6 +42,7 @@ const Market = () => {
 
   const marketGrid = [
     { field: 'name', headerText: 'Market', width: '150', textAlign: 'Center' },
+    { field: 'location', headerText: 'District', width: '150', textAlign: 'Center' },
     { headerText: 'Action', width: '100', textAlign: 'Center', template: EditMarketTemp }
   ];
 
