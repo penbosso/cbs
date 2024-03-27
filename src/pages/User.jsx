@@ -81,6 +81,12 @@ const Users = () => {
       field: 'role'
     },
     {
+      headerText: 'Position',
+      width: '90',
+      textAlign: 'Center',
+      field: 'position'
+    },
+    {
       headerText: 'Approved',
       width: '80',
       textAlign: 'Center',

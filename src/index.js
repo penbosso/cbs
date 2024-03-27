@@ -8,8 +8,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Signin, Signup, ForgotPassword, Unauthorized } from './pages';
 import { Provider } from 'react-redux'
 import { useStateContext } from './contexts/ContextProvider';
-import { store } from './store'
+import { store, persistor } from './store'
 import { ProtectedRoute } from './components';
+import { PersistGate } from 'redux-persist/integration/react';
 
 const TopRoute = () => {
   const { setCurrentColor, setCurrentMode, currentMode } = useStateContext();
@@ -43,9 +44,11 @@ const TopRoute = () => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <ContextProvider>
-      <TopRoute />
-    </ContextProvider>
+    <PersistGate loading={null} persistor={persistor}>
+      <ContextProvider>
+        <TopRoute />
+      </ContextProvider>
+    </PersistGate>
   </Provider>
 );
 

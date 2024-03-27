@@ -46,7 +46,7 @@ export default function Signin() {
 
 
           <h3 style={{ color: tbg_600 }} className={`text-4xl font-bold`}>
-            Occupancy Rate Cross Bordeer Market
+            Cross Border Market Occupancy Rate
           </h3>
         <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-gray-100  dark:bg-main-dark-bg shadow-md sm:max-w-lg sm:rounded-lg">
           <form onSubmit={handleSubmit}>

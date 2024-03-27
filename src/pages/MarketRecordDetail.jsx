@@ -19,6 +19,9 @@ const MarketRecordDetail = () => {
     const navigate = useNavigate()
     const { data: comments, isLoading: commentLoading } = useGetMarketRecordCommentsByMarketRecordIdQuery(marketRecord?.id ? marketRecord?.id : skipToken)
 
+    if (currentUser.role !== 'creator' && marketRecord.market === '') {
+        navigate('/market-record')
+    }
 
     const { data: componentData } = useGetComponentsQuery();
     const components = componentData?.components.filter(component => component.market == marketRecord.market)
@@ -494,7 +497,7 @@ const MarketRecordDetail = () => {
                     <h2 className="font-bold mt-4">Comments</h2>
                     {commentLoading && <Loading />}
                     {!commentLoading && <div className="flex flex-wrap mb-2">
-                        {comments?.length > 0 ? (
+                        {(comments?.length > 0 && currentUser.role?.toLowerCase() !== 'minister')? (
                             comments.map((comment, index) => (
                                 <div key={index} className="w-full sm:w-1 md:w-1/2 lg:w-1/3 mb-4 p-4">
                                     <div className="bg-gray-100 rounded-md p-4 text-sm ">

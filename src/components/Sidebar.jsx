@@ -27,7 +27,7 @@ const user = useSelector(selectCurrentUser);
         <>
           <div className="flex justify-between items-center">
             <Link to="/" onClick={handleCloseSideBar} className="items-center gap-3 ml-3 mt-4 flex text-xl font-extrabold tracking-tight dark:text-white text-slate-900">
-              <span>Occupancy Rate Cross Bordeer Market</span>
+              <span>Cross Border Market Occupancy Rate</span>
             </Link>
             <TooltipComponent content="Menu" position="BottomCenter">
               <button

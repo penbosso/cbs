@@ -17,7 +17,7 @@ const MarketRecord = () => {
   const { currentColor, handleClickWithCatId, handleClick, isClicked, setMarketRecord, marketRecord } = useStateContext();
   const currentUser = useSelector(selectCurrentUser)
 
-  const [proccessed, setProcessed] = useState(true);
+  const [proccessed, setProcessed] = useState(false);
   const navigate = useNavigate()
   const occupanyRateTemp = (props) => {
     return <span>1</span>
@@ -58,7 +58,17 @@ const MarketRecord = () => {
 
   const groupOptions = { showGroupedColumn: false, columns: ['group_id'], showDropArea: false, showToggleButton: false };
 
-  const toolbarOptions = ['Search'];
+  const toolbarOptions = ['Search', 'PdfExport', 'ExcelExport'];
+
+  let grid;
+  const toolbarClick = (args) => {
+    if (grid && args.item.id === 'Grid_pdfexport') {
+      grid.pdfExport();
+    }
+    if (grid && args.item.id === 'Grid_excelexport') {
+      grid.excelExport();
+    }
+  }
   const marketrecordGrid = [
     {
       field: 'season',
@@ -82,7 +92,7 @@ const MarketRecord = () => {
       headerText: 'Created at',
       width: '150',
       textAlign: 'Center',
-      template: dateTemplate
+      field: 'created_at'
     },
     {
       headerText: 'Action',
@@ -105,7 +115,7 @@ const MarketRecord = () => {
     } else if (currentUser.role === 'creator') {
       return record.status === 'rollback';
     } else {
-      return record.status === 'completed' || record.status === 'processing' || record.status === 'submitted';
+      return record.status === 'forwarded' || record.status === 'submitted';
     }
   });
   const editing = { allowDeleting: true, allowEditing: true };
@@ -115,9 +125,7 @@ const MarketRecord = () => {
     'SortAscending',
     'SortDescending',
     'Copy',
-    'Edit',
     'Search',
-    'Save',
     'Cancel',
     'PdfExport',
     'ExcelExport',
@@ -153,14 +161,19 @@ const MarketRecord = () => {
       </div>
 
       <GridComponent
-        id="gridcomp"
+        id='Grid'
+        toolbarClick={toolbarClick}
+        ref={g => grid = g}
         dataSource={!proccessed ? filteredMarketRecords : marketrecord}
         allowPaging
+        allowGrouping={true}
+        filterSettings={{ type: 'Excel' }}
+        allowFiltering={true}
         pageSettings={{ pageSize: 10 }}
         toolbar={toolbarOptions}
+        allowPdfExport={true}
         allowSorting
         allowExcelExport
-        allowPdfExport
         contextMenuItems={contextMenuItems}
         editSettings={editing}
       >

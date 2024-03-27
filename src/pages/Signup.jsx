@@ -78,7 +78,7 @@ console.log(districts)
 
 
         <h3 style={{ color: tbg_600 }} className={`text-4xl font-bold`}>
-          Occupancy Rate Cross Bordeer Market
+          Cross Border Market Occupancy Rate
         </h3>
         <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-white  dark:bg-main-dark-bg shadow-md sm:max-w-lg sm:rounded-lg">
 
@@ -133,10 +133,11 @@ console.log(districts)
                   className="block w-full mt-1 py-3 border-gray-400 rounded-md shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 >
                   <option value="">Select Position</option>
-                  <option value="Director">Director</option>
-                  <option value="Manager">Manager</option>
-                  <option value="Operator">Operator</option>
-                  <option value="Inspector">Inspector</option>
+                  <option value="Creator">Creator</option>
+                  <option value="Verifier">Verifier</option>
+                  <option value="Approver">Approver</option>
+                  <option value="viewer">Viewer</option>
+                  <option value="Mayor">Mayor</option>
                   <option value="Minister">Minister</option>
                 </select>
               </div>

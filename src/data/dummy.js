@@ -88,7 +88,7 @@ export const EditorData = () => (
       Add React to a Website
       You can add React to an HTML page in one minute. You can then either gradually expand its presence, or keep it contained to a few dynamic widgets.
 
-      Create a New Occupancy Rate Cross Bordeer Market
+      Create a New Cross Border Market Occupancy Rate
       When starting a React project, a simple HTML page with script tags might still be the best option. It only takes a minute to set up!
 
       As your application grows, you might want to consider a more integrated setup. There are several JavaScript toolchains we recommend for larger applications. Each of them can work with little to no configuration and lets you take full advantage of the rich React ecosystem. Learn how.

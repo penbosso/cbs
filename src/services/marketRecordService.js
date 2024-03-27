@@ -1,10 +1,10 @@
 
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "./apiSlice";
+import { formatDate } from "../util/helper";
 
 const marketrecordsAdapter = createEntityAdapter();
 const initialState = marketrecordsAdapter.getInitialState();
-
 
 export const marketrecordService = apiSlice.injectEndpoints({
     endpoints: builder => ({
@@ -25,6 +25,12 @@ export const marketrecordService = apiSlice.injectEndpoints({
                 } else {
                     return '/market/location-report-list'
                 }
+            },
+            transformResponse: responseData => {
+                const result = responseData.reports.map(report => {
+                    return {...report, created_at: formatDate(report.created_at)}
+                })
+                return {...responseData, reports: result};
             },
             providesTags: ['MarketRecord']
         }),
