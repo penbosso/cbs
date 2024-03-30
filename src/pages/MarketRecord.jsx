@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GridComponent, ColumnsDirective, ColumnDirective, Group, Resize, Sort, ContextMenu, Filter, Page, ExcelExport, PdfExport, Edit, Inject } from '@syncfusion/ej2-react-grids';
 import { Header, DropdownButton, MarketRecordModal } from '../components';
-import { useGetOrderByRestaurantIdQuery, useGetUserMarketRecordsQuery } from '../services/marketRecordService';
+import { useGetUserMarketRecordsQuery } from '../services/marketRecordService';
 import { useStateContext } from '../contexts/ContextProvider'
 import { AiFillEdit, AiTwotoneDelete, AiOutlineFolderView } from 'react-icons/ai';
 import { Space, Button, message } from 'antd';

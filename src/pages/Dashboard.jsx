@@ -2,7 +2,11 @@ import React from 'react';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { dropdownData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
-import MarketRecord from './MarketRecord';
+import { useSelector } from "react-redux"
+import { selectCurrentUser } from '../services/authSlice'
+import { DashboardView } from '../components';
+import { useNavigate } from 'react-router-dom';
+
 
 const DropDown = ({ currentMode }) => (
   <div className="w-28 border-1 border-color px-2 py-1 rounded-md">
@@ -11,12 +15,15 @@ const DropDown = ({ currentMode }) => (
 );
 
 const Dashboard = () => {
-  const { currentColor, currentMode } = useStateContext();
+  const currentUser = useSelector(selectCurrentUser)
+  const navigate = useNavigate()
+  // if(['verifier', 'minister', 'viewer', 'admin'].includes(currentUser.role))
+  //   navigate('/market-record')
 
   return (
 
     <div className="mt-2">
-      <MarketRecord />
+      <DashboardView />
     </div>
   );
 };

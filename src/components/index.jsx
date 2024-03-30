@@ -13,3 +13,5 @@ export { default as DistrictModal } from './DistrictModal';
 export { default as MarketRecordModal } from './MarketRecordModal';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as DropdownButton } from './DropdownButton';
+export { default as DashboardView } from './DashboardView';
+

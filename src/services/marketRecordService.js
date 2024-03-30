@@ -34,6 +34,20 @@ export const marketrecordService = apiSlice.injectEndpoints({
             },
             providesTags: ['MarketRecord']
         }),
+        getMarketOccupancyRate: builder.query({
+            query: filter => {
+                if(filter?.year !=='') {
+                    return `/market/market_occupancy_rate/${filter.year}`
+                } else {
+                    return `/market/market_occupancy_rate/`
+                }
+            },
+            providesTags: ['MarketRecord']
+        }),
+        getSeaonOccupancyRate: builder.query({
+            query: filter => `/market/season_occupancy_rate/`,
+            providesTags: ['MarketRecord']
+        }),
         getMarketRecordByMarketRecordId: builder.query({
             query: id => `/marketrecords/${id}`,
             providesTags: ['MarketRecord']
@@ -86,6 +100,8 @@ export const marketrecordService = apiSlice.injectEndpoints({
 
 export const {
     useGetMarketRecordsQuery,
+    useGetMarketOccupancyRateQuery,
+    useGetSeaonOccupancyRateQuery,
     useGetUserMarketRecordsQuery,
     useGetMarketRecordCommentsByMarketRecordIdQuery,
     useGetMarketRecordByMarketRecordIdQuery,
