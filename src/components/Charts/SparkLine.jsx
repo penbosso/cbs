@@ -27,7 +27,7 @@ const SparkLine = (props) => {
     datasets: [
       {
         label: 'Sales',
-        data:  data.map(item => item.average_occupancy_rate),
+        data:  data.map(item => item.averageOccupancyRate),
         backgroundColor: '#078eca',
         borderWidth: 1,
       },
